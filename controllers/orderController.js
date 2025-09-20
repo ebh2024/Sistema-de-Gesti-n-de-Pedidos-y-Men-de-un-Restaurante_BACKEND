@@ -1,7 +1,8 @@
 const { Order, OrderDetail, Table, User, Dish, sequelize } = require('../models');
 const { Op } = require('sequelize');
+const AppError = require('../utils/AppError');
 
-const getAllOrders = async (req, res) => {
+const getAllOrders = async (req, res, next) => {
     try {
         const whereCondition = req.user.rol === 'mesero' ? { id_mesero: req.user.id } : {};
 
@@ -31,12 +32,11 @@ const getAllOrders = async (req, res) => {
 
         res.json(formattedOrders);
     } catch (error) {
-        console.error('Error obteniendo pedidos:', error);
-        res.status(500).json({ message: 'Error interno del servidor' });
+        next(error);
     }
 };
 
-const getOrderById = async (req, res) => {
+const getOrderById = async (req, res, next) => {
     try {
         const { id } = req.params;
 
@@ -73,7 +73,7 @@ const getOrderById = async (req, res) => {
         });
 
         if (!order) {
-            return res.status(404).json({ message: 'Pedido no encontrado' });
+            return next(new AppError('Pedido no encontrado', 404));
         }
 
         // Transformar los datos para mantener el formato anterior
@@ -90,29 +90,28 @@ const getOrderById = async (req, res) => {
 
         res.json(formattedOrder);
     } catch (error) {
-        console.error('Error obteniendo pedido:', error);
-        res.status(500).json({ message: 'Error interno del servidor' });
+        next(error);
     }
 };
 
-const createOrder = async (req, res) => {
+const createOrder = async (req, res, next) => {
     const transaction = await sequelize.transaction();
 
     try {
         const { id_mesa, detalles } = req.body;
 
         if (!id_mesa || !detalles || detalles.length === 0) {
-            return res.status(400).json({ message: 'Mesa y detalles del pedido son requeridos' });
+            return next(new AppError('Mesa y detalles del pedido son requeridos', 400));
         }
 
         // Verificar que la mesa existe y está disponible
         const table = await Table.findByPk(id_mesa, { transaction });
         if (!table) {
-            return res.status(404).json({ message: 'Mesa no encontrada' });
+            return next(new AppError('Mesa no encontrada', 404));
         }
 
         if (!table.disponible) {
-            return res.status(400).json({ message: 'La mesa no está disponible' });
+            return next(new AppError('La mesa no está disponible', 400));
         }
 
         // Calcular total y verificar platos
@@ -129,9 +128,7 @@ const createOrder = async (req, res) => {
             });
 
             if (!dish) {
-                return res.status(400).json({
-                    message: `Plato ${detalle.id_plato} no encontrado o no disponible`
-                });
+                return next(new AppError(`Plato ${detalle.id_plato} no encontrado o no disponible`, 400));
             }
 
             total += dish.precio * detalle.cantidad;
@@ -172,18 +169,17 @@ const createOrder = async (req, res) => {
         });
     } catch (error) {
         await transaction.rollback();
-        console.error('Error creando pedido:', error);
-        res.status(500).json({ message: 'Error interno del servidor' });
+        next(error);
     }
 };
 
-const updateOrderStatus = async (req, res) => {
+const updateOrderStatus = async (req, res, next) => {
     try {
         const { id } = req.params;
         const { estado } = req.body;
 
         if (!['pendiente', 'en preparación', 'servido'].includes(estado)) {
-            return res.status(400).json({ message: 'Estado inválido' });
+            return next(new AppError('Estado inválido', 400));
         }
 
         // Verificar que el pedido existe y pertenece al usuario (si es mesero)
@@ -194,7 +190,7 @@ const updateOrderStatus = async (req, res) => {
         const order = await Order.findOne({ where: whereCondition });
 
         if (!order) {
-            return res.status(404).json({ message: 'Pedido no encontrado' });
+            return next(new AppError('Pedido no encontrado', 404));
         }
 
         // Actualizar estado
@@ -213,12 +209,11 @@ const updateOrderStatus = async (req, res) => {
 
         res.json({ message: 'Estado del pedido actualizado exitosamente' });
     } catch (error) {
-        console.error('Error actualizando estado del pedido:', error);
-        res.status(500).json({ message: 'Error interno del servidor' });
+        next(error);
     }
 };
 
-const deleteOrder = async (req, res) => {
+const deleteOrder = async (req, res, next) => {
     const transaction = await sequelize.transaction();
 
     try {
@@ -235,7 +230,7 @@ const deleteOrder = async (req, res) => {
         });
 
         if (!order) {
-            return res.status(404).json({ message: 'Pedido no encontrado' });
+            return next(new AppError('Pedido no encontrado', 404));
         }
 
         // Eliminar detalles del pedido (Sequelize maneja esto automáticamente por las asociaciones)
@@ -261,8 +256,7 @@ const deleteOrder = async (req, res) => {
         res.json({ message: 'Pedido eliminado exitosamente' });
     } catch (error) {
         await transaction.rollback();
-        console.error('Error eliminando pedido:', error);
-        res.status(500).json({ message: 'Error interno del servidor' });
+        next(error);
     }
 };
 

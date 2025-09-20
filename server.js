@@ -18,6 +18,8 @@ const authRoutes = require('./routes/auth');
 const dishRoutes = require('./routes/dishes');
 const tableRoutes = require('./routes/tables');
 const orderRoutes = require('./routes/orders');
+const AppError = require('./utils/AppError');
+const globalErrorHandler = require('./middlewares/errorHandler');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/dishes', dishRoutes);
@@ -29,16 +31,13 @@ app.get('/api/health', (req, res) => {
     res.json({ message: 'API funcionando correctamente', timestamp: new Date().toISOString() });
 });
 
-// Middleware de manejo de errores
-app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).json({ message: 'Algo salió mal!' });
+// Manejo de errores para rutas no definidas
+app.all('*', (req, res, next) => {
+    next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
 });
 
-// Ruta 404
-app.use((req, res) => {
-    res.status(404).json({ message: 'Ruta no encontrada' });
-});
+// Middleware global de manejo de errores
+app.use(globalErrorHandler);
 
 // Iniciar servidor
 app.listen(PORT, () => {

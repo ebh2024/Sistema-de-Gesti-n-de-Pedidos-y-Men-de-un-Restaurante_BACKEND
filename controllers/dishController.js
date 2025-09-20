@@ -1,39 +1,38 @@
 const { Dish } = require('../models');
+const AppError = require('../utils/AppError');
 
-const getAllDishes = async (req, res) => {
+const getAllDishes = async (req, res, next) => {
     try {
         const dishes = await Dish.findAll({
             order: [['created_at', 'DESC']]
         });
         res.json(dishes);
     } catch (error) {
-        console.error('Error obteniendo platos:', error);
-        res.status(500).json({ message: 'Error interno del servidor' });
+        next(error);
     }
 };
 
-const getDishById = async (req, res) => {
+const getDishById = async (req, res, next) => {
     try {
         const { id } = req.params;
         const dish = await Dish.findByPk(id);
 
         if (!dish) {
-            return res.status(404).json({ message: 'Plato no encontrado' });
+            return next(new AppError('Plato no encontrado', 404));
         }
 
         res.json(dish);
     } catch (error) {
-        console.error('Error obteniendo plato:', error);
-        res.status(500).json({ message: 'Error interno del servidor' });
+        next(error);
     }
 };
 
-const createDish = async (req, res) => {
+const createDish = async (req, res, next) => {
     try {
         const { nombre, descripcion, precio, disponibilidad } = req.body;
 
         if (!nombre || !precio) {
-            return res.status(400).json({ message: 'Nombre y precio son requeridos' });
+            return next(new AppError('Nombre y precio son requeridos', 400));
         }
 
         const dish = await Dish.create({
@@ -48,12 +47,11 @@ const createDish = async (req, res) => {
             dishId: dish.id
         });
     } catch (error) {
-        console.error('Error creando plato:', error);
-        res.status(500).json({ message: 'Error interno del servidor' });
+        next(error);
     }
 };
 
-const updateDish = async (req, res) => {
+const updateDish = async (req, res, next) => {
     try {
         const { id } = req.params;
         const { nombre, descripcion, precio, disponibilidad } = req.body;
@@ -64,30 +62,28 @@ const updateDish = async (req, res) => {
         );
 
         if (affectedRows === 0) {
-            return res.status(404).json({ message: 'Plato no encontrado' });
+            return next(new AppError('Plato no encontrado', 404));
         }
 
         res.json({ message: 'Plato actualizado exitosamente' });
     } catch (error) {
-        console.error('Error actualizando plato:', error);
-        res.status(500).json({ message: 'Error interno del servidor' });
+        next(error);
     }
 };
 
-const deleteDish = async (req, res) => {
+const deleteDish = async (req, res, next) => {
     try {
         const { id } = req.params;
 
         const deletedRows = await Dish.destroy({ where: { id } });
 
         if (deletedRows === 0) {
-            return res.status(404).json({ message: 'Plato no encontrado' });
+            return next(new AppError('Plato no encontrado', 404));
         }
 
         res.json({ message: 'Plato eliminado exitosamente' });
     } catch (error) {
-        console.error('Error eliminando plato:', error);
-        res.status(500).json({ message: 'Error interno del servidor' });
+        next(error);
     }
 };
 

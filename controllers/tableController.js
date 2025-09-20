@@ -1,45 +1,44 @@
 const { Table } = require('../models');
+const AppError = require('../utils/AppError');
 
-const getAllTables = async (req, res) => {
+const getAllTables = async (req, res, next) => {
     try {
         const tables = await Table.findAll({
             order: [['numero', 'ASC']]
         });
         res.json(tables);
     } catch (error) {
-        console.error('Error obteniendo mesas:', error);
-        res.status(500).json({ message: 'Error interno del servidor' });
+        next(error);
     }
 };
 
-const getTableById = async (req, res) => {
+const getTableById = async (req, res, next) => {
     try {
         const { id } = req.params;
         const table = await Table.findByPk(id);
 
         if (!table) {
-            return res.status(404).json({ message: 'Mesa no encontrada' });
+            return next(new AppError('Mesa no encontrada', 404));
         }
 
         res.json(table);
     } catch (error) {
-        console.error('Error obteniendo mesa:', error);
-        res.status(500).json({ message: 'Error interno del servidor' });
+        next(error);
     }
 };
 
-const createTable = async (req, res) => {
+const createTable = async (req, res, next) => {
     try {
         const { numero, capacidad, disponible } = req.body;
 
         if (!numero || !capacidad) {
-            return res.status(400).json({ message: 'Número y capacidad son requeridos' });
+            return next(new AppError('Número y capacidad son requeridos', 400));
         }
 
         // Verificar si el número de mesa ya existe
         const existingTable = await Table.findOne({ where: { numero } });
         if (existingTable) {
-            return res.status(400).json({ message: 'El número de mesa ya existe' });
+            return next(new AppError('El número de mesa ya existe', 400));
         }
 
         const table = await Table.create({
@@ -53,12 +52,11 @@ const createTable = async (req, res) => {
             tableId: table.id
         });
     } catch (error) {
-        console.error('Error creando mesa:', error);
-        res.status(500).json({ message: 'Error interno del servidor' });
+        next(error);
     }
 };
 
-const updateTable = async (req, res) => {
+const updateTable = async (req, res, next) => {
     try {
         const { id } = req.params;
         const { numero, capacidad, disponible } = req.body;
@@ -73,7 +71,7 @@ const updateTable = async (req, res) => {
             });
 
             if (existingTable) {
-                return res.status(400).json({ message: 'El número de mesa ya existe' });
+                return next(new AppError('El número de mesa ya existe', 400));
             }
         }
 
@@ -83,30 +81,28 @@ const updateTable = async (req, res) => {
         );
 
         if (affectedRows === 0) {
-            return res.status(404).json({ message: 'Mesa no encontrada' });
+            return next(new AppError('Mesa no encontrada', 404));
         }
 
         res.json({ message: 'Mesa actualizada exitosamente' });
     } catch (error) {
-        console.error('Error actualizando mesa:', error);
-        res.status(500).json({ message: 'Error interno del servidor' });
+        next(error);
     }
 };
 
-const deleteTable = async (req, res) => {
+const deleteTable = async (req, res, next) => {
     try {
         const { id } = req.params;
 
         const deletedRows = await Table.destroy({ where: { id } });
 
         if (deletedRows === 0) {
-            return res.status(404).json({ message: 'Mesa no encontrada' });
+            return next(new AppError('Mesa no encontrada', 404));
         }
 
         res.json({ message: 'Mesa eliminada exitosamente' });
     } catch (error) {
-        console.error('Error eliminando mesa:', error);
-        res.status(500).json({ message: 'Error interno del servidor' });
+        next(error);
     }
 };
 

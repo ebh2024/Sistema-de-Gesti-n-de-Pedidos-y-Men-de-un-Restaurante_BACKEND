@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 const { User } = require('../models');
+const AppError = require('../utils/AppError');
 require('dotenv').config();
 
 const transporter = nodemailer.createTransport({
@@ -12,19 +13,19 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-const register = async (req, res) => {
+const register = async (req, res, next) => {
     try {
         const { nombre, correo, contraseña, rol } = req.body;
 
         // Validar datos
         if (!nombre || !correo || !contraseña || !rol) {
-            return res.status(400).json({ message: 'Todos los campos son requeridos' });
+            return next(new AppError('Todos los campos son requeridos', 400));
         }
 
         // Verificar si el usuario ya existe
         const existingUser = await User.findOne({ where: { correo } });
         if (existingUser) {
-            return res.status(400).json({ message: 'El correo ya está registrado' });
+            return next(new AppError('El correo ya está registrado', 400));
         }
 
         // Hash de la contraseña
@@ -43,17 +44,16 @@ const register = async (req, res) => {
             userId: user.id
         });
     } catch (error) {
-        console.error('Error en registro:', error);
-        res.status(500).json({ message: 'Error interno del servidor' });
+        next(error);
     }
 };
 
-const login = async (req, res) => {
+const login = async (req, res, next) => {
     try {
         const { correo, contraseña } = req.body;
 
         if (!correo || !contraseña) {
-            return res.status(400).json({ message: 'Correo y contraseña son requeridos' });
+            return next(new AppError('Correo y contraseña son requeridos', 400));
         }
 
         // Buscar usuario
@@ -65,13 +65,13 @@ const login = async (req, res) => {
         });
 
         if (!user) {
-            return res.status(401).json({ message: 'Credenciales inválidas' });
+            return next(new AppError('Credenciales inválidas', 401));
         }
 
         // Verificar contraseña
         const isValidPassword = await bcrypt.compare(contraseña, user.contraseña);
         if (!isValidPassword) {
-            return res.status(401).json({ message: 'Credenciales inválidas' });
+            return next(new AppError('Credenciales inválidas', 401));
         }
 
         // Generar token JWT
@@ -92,17 +92,16 @@ const login = async (req, res) => {
             }
         });
     } catch (error) {
-        console.error('Error en login:', error);
-        res.status(500).json({ message: 'Error interno del servidor' });
+        next(error);
     }
 };
 
-const forgotPassword = async (req, res) => {
+const forgotPassword = async (req, res, next) => {
     try {
         const { correo } = req.body;
 
         if (!correo) {
-            return res.status(400).json({ message: 'Correo es requerido' });
+            return next(new AppError('Correo es requerido', 400));
         }
 
         // Verificar si el usuario existe
@@ -114,7 +113,7 @@ const forgotPassword = async (req, res) => {
         });
 
         if (!user) {
-            return res.status(404).json({ message: 'Usuario no encontrado' });
+            return next(new AppError('Usuario no encontrado', 404));
         }
 
         // Generar token de reset
@@ -129,17 +128,16 @@ const forgotPassword = async (req, res) => {
 
         res.json({ message: 'Instrucciones de reset enviadas al correo' });
     } catch (error) {
-        console.error('Error en forgot password:', error);
-        res.status(500).json({ message: 'Error interno del servidor' });
+        next(error);
     }
 };
 
-const resetPassword = async (req, res) => {
+const resetPassword = async (req, res, next) => {
     try {
         const { token, nuevaContraseña } = req.body;
 
         if (!token || !nuevaContraseña) {
-            return res.status(400).json({ message: 'Token y nueva contraseña son requeridos' });
+            return next(new AppError('Token y nueva contraseña son requeridos', 400));
         }
 
         // Verificar token
@@ -156,8 +154,7 @@ const resetPassword = async (req, res) => {
 
         res.json({ message: 'Contraseña actualizada exitosamente' });
     } catch (error) {
-        console.error('Error en reset password:', error);
-        res.status(500).json({ message: 'Token inválido o expirado' });
+        next(new AppError('Token inválido o expirado', 400));
     }
 };
 
