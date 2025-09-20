@@ -78,4 +78,4 @@ module.exports = (err, req, res, next) => {
     }
 };
 
-exports.handleValidationErrors = handleValidationErrors;
+module.exports.handleValidationErrors = handleValidationErrors;

@@ -31,8 +31,12 @@ app.get('/api/health', (req, res) => {
     res.json({ message: 'API funcionando correctamente', timestamp: new Date().toISOString() });
 });
 
-// Manejo de errores para rutas no definidas
-app.all('*', (req, res, next) => {
+/**
+ * Manejo de errores para rutas no definidas
+ * Nota: En Express 5, usar '*' como ruta genera error en path-to-regexp.
+ * Usamos app.use sin ruta para capturar cualquier request no manejado.
+ */
+app.use((req, res, next) => {
     next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
 });
 
