@@ -1,4 +1,14 @@
 const AppError = require('../utils/AppError');
+const { validationResult } = require('express-validator');
+
+const handleValidationErrors = (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        const errorMessages = errors.array().map(error => error.msg);
+        return next(new AppError(`Invalid input data: ${errorMessages.join('. ')}`, 400));
+    }
+    next();
+};
 
 const handleCastErrorDB = err => {
     const message = `Invalid ${err.path}: ${err.value}.`;
@@ -61,7 +71,11 @@ module.exports = (err, req, res, next) => {
         if (error.code === 11000) error = handleDuplicateFieldsDB(error);
         if (error.name === 'ValidationError')
             error = handleValidationErrorDB(error);
+        // No need to explicitly handle express-validator errors here, as handleValidationErrors
+        // will catch them before they reach this point and convert them to AppError instances.
 
         sendErrorProd(error, res);
     }
 };
+
+exports.handleValidationErrors = handleValidationErrors;
