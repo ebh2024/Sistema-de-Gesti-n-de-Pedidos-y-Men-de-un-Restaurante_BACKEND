@@ -1,0 +1,7 @@
+{"level":"error","message":"Error durante el login: Cannot destructure property 'correo' of 'req.body' as it is undefined.","timestamp":"2025-09-22 10:42:50"}
+{"level":"error","message":"Error durante el login: Cannot destructure property 'correo' of 'req.body' as it is undefined.","timestamp":"2025-09-22 10:43:18"}
+{"level":"error","message":"Error durante el login: Cannot destructure property 'correo' of 'req.body' as it is undefined.","timestamp":"2025-09-22 10:45:15"}
+{"level":"error","message":"Error durante el login: Cannot destructure property 'correo' of 'req.body' as it is undefined.","timestamp":"2025-09-22 10:45:54"}
+{"level":"error","message":"Error durante el login: Cannot destructure property 'correo' of 'req.body' as it is undefined.","timestamp":"2025-09-22 10:46:11"}
+{"level":"error","message":"Error durante el login: Cannot destructure property 'correo' of 'req.body' as it is undefined.","timestamp":"2025-09-22 10:47:34"}
+{"level":"error","message":"Error al registrar usuario: Data truncated for column 'rol' at row 1","timestamp":"2025-09-22 10:51:21"}

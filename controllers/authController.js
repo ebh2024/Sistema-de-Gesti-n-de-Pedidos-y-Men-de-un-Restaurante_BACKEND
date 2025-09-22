@@ -86,6 +86,7 @@ const login = async (req, res, next) => {
             { expiresIn: '24h' }
         );
 
+        logger.info(`Login exitoso para el usuario: ${user.correo}`);
         res.json({
             message: 'Login exitoso',
             token,

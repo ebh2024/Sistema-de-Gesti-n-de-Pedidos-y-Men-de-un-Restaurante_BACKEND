@@ -2,3 +2,50 @@
 {"level":"info","message":"API Health check: http://localhost:3000/api/health","timestamp":"2025-09-22 10:34:27"}
 {"level":"info","message":"::1 - - [22/Sep/2025:13:34:40 +0000] \"GET /api/health HTTP/1.1\" 200 82 \"-\" \"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36\"","timestamp":"2025-09-22 10:34:40"}
 {"level":"info","message":"::1 - - [22/Sep/2025:13:34:49 +0000] \"GET /favicon.ico HTTP/1.1\" - - \"http://localhost:3000/api/health\" \"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36\"","timestamp":"2025-09-22 10:34:49"}
+{"level":"info","message":"Servidor corriendo en el puerto 3000","timestamp":"2025-09-22 10:35:38"}
+{"level":"info","message":"API Health check: http://localhost:3000/api/health","timestamp":"2025-09-22 10:35:38"}
+{"level":"info","message":"::1 - - [22/Sep/2025:13:40:39 +0000] \"GET /api/health HTTP/1.1\" 200 82 \"-\" \"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36\"","timestamp":"2025-09-22 10:40:39"}
+{"level":"info","message":"::1 - - [22/Sep/2025:13:40:45 +0000] \"GET /api/health HTTP/1.1\" 200 82 \"-\" \"PostmanRuntime/7.46.1\"","timestamp":"2025-09-22 10:40:45"}
+{"level":"info","message":"::1 - - [22/Sep/2025:13:41:40 +0000] \"GET /api/dishes HTTP/1.1\" 401 39 \"-\" \"PostmanRuntime/7.46.1\"","timestamp":"2025-09-22 10:41:40"}
+{"level":"info","message":"::1 - - [22/Sep/2025:13:41:52 +0000] \"GET /favicon.ico HTTP/1.1\" - - \"http://localhost:3000/api/health\" \"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36\"","timestamp":"2025-09-22 10:41:52"}
+{"level":"info","message":"::1 - - [22/Sep/2025:13:42:24 +0000] \"GET /api/login HTTP/1.1\" - - \"-\" \"PostmanRuntime/7.46.1\"","timestamp":"2025-09-22 10:42:24"}
+{"level":"info","message":"::1 - - [22/Sep/2025:13:42:49 +0000] \"GET /api/auth/login HTTP/1.1\" - - \"-\" \"PostmanRuntime/7.46.1\"","timestamp":"2025-09-22 10:42:49"}
+{"level":"error","message":"Error durante el login: Cannot destructure property 'correo' of 'req.body' as it is undefined.","timestamp":"2025-09-22 10:42:50"}
+{"level":"info","message":"::1 - - [22/Sep/2025:13:43:06 +0000] \"POST /api/auth/login HTTP/1.1\" - - \"-\" \"PostmanRuntime/7.46.1\"","timestamp":"2025-09-22 10:43:06"}
+{"level":"error","message":"Error durante el login: Cannot destructure property 'correo' of 'req.body' as it is undefined.","timestamp":"2025-09-22 10:43:18"}
+{"level":"info","message":"::1 - - [22/Sep/2025:13:43:49 +0000] \"POST /api/auth/login HTTP/1.1\" - - \"-\" \"PostmanRuntime/7.46.1\"","timestamp":"2025-09-22 10:43:49"}
+{"level":"info","message":"Servidor corriendo en el puerto 3000","timestamp":"2025-09-22 10:45:11"}
+{"level":"info","message":"API Health check: http://localhost:3000/api/health","timestamp":"2025-09-22 10:45:11"}
+{"level":"error","message":"Error durante el login: Cannot destructure property 'correo' of 'req.body' as it is undefined.","timestamp":"2025-09-22 10:45:15"}
+{"level":"info","message":"::1 - - [22/Sep/2025:13:45:53 +0000] \"POST /api/auth/login HTTP/1.1\" - - \"-\" \"PostmanRuntime/7.46.1\"","timestamp":"2025-09-22 10:45:53"}
+{"level":"error","message":"Error durante el login: Cannot destructure property 'correo' of 'req.body' as it is undefined.","timestamp":"2025-09-22 10:45:54"}
+{"level":"info","message":"Servidor corriendo en el puerto 3000","timestamp":"2025-09-22 10:46:04"}
+{"level":"info","message":"API Health check: http://localhost:3000/api/health","timestamp":"2025-09-22 10:46:04"}
+{"level":"error","message":"Error durante el login: Cannot destructure property 'correo' of 'req.body' as it is undefined.","timestamp":"2025-09-22 10:46:11"}
+{"level":"info","message":"::1 - - [22/Sep/2025:13:46:14 +0000] \"POST /api/auth/login HTTP/1.1\" - - \"-\" \"PostmanRuntime/7.46.1\"","timestamp":"2025-09-22 10:46:14"}
+{"level":"info","message":"Servidor corriendo en el puerto 3000","timestamp":"2025-09-22 10:47:31"}
+{"level":"info","message":"API Health check: http://localhost:3000/api/health","timestamp":"2025-09-22 10:47:31"}
+{"level":"error","message":"Error durante el login: Cannot destructure property 'correo' of 'req.body' as it is undefined.","timestamp":"2025-09-22 10:47:34"}
+{"level":"info","message":"Servidor corriendo en el puerto 3000","timestamp":"2025-09-22 10:48:32"}
+{"level":"info","message":"API Health check: http://localhost:3000/api/health","timestamp":"2025-09-22 10:48:32"}
+{"level":"warn","message":"Intento de login fallido: usuario no encontrado para el correo test@example.com","timestamp":"2025-09-22 10:49:26"}
+{"level":"info","message":"::1 - - [22/Sep/2025:13:49:33 +0000] \"POST /api/auth/login HTTP/1.1\" - - \"-\" \"PostmanRuntime/7.46.1\"","timestamp":"2025-09-22 10:49:33"}
+{"level":"warn","message":"Intento de login fallido: contraseña inválida para el correo ezequielbusto987@gmail.com","timestamp":"2025-09-22 10:49:59"}
+{"level":"info","message":"::1 - - [22/Sep/2025:13:50:08 +0000] \"POST /api/auth/login HTTP/1.1\" - - \"-\" \"PostmanRuntime/7.46.1\"","timestamp":"2025-09-22 10:50:08"}
+{"level":"error","message":"Error al registrar usuario: Data truncated for column 'rol' at row 1","timestamp":"2025-09-22 10:51:21"}
+{"level":"info","message":"::1 - - [22/Sep/2025:13:52:56 +0000] \"POST /api/auth/register HTTP/1.1\" - - \"-\" \"PostmanRuntime/7.46.1\"","timestamp":"2025-09-22 10:52:56"}
+{"level":"info","message":"Usuario registrado exitosamente: admin@gmail.com","timestamp":"2025-09-22 10:52:57"}
+{"level":"info","message":"::1 - - [22/Sep/2025:13:52:57 +0000] \"POST /api/auth/register HTTP/1.1\" 201 56 \"-\" \"PostmanRuntime/7.46.1\"","timestamp":"2025-09-22 10:52:57"}
+{"level":"info","message":"::1 - - [22/Sep/2025:13:54:02 +0000] \"POST /api/auth/login HTTP/1.1\" 200 327 \"-\" \"PostmanRuntime/7.46.1\"","timestamp":"2025-09-22 10:54:02"}
+{"level":"info","message":"Servidor corriendo en el puerto 3000","timestamp":"2025-09-22 10:54:23"}
+{"level":"info","message":"API Health check: http://localhost:3000/api/health","timestamp":"2025-09-22 10:54:23"}
+{"level":"info","message":"::1 - - [22/Sep/2025:13:54:25 +0000] \"POST /api/auth/login HTTP/1.1\" 200 327 \"-\" \"PostmanRuntime/7.46.1\"","timestamp":"2025-09-22 10:54:25"}
+{"level":"info","message":"Servidor corriendo en el puerto 3000","timestamp":"2025-09-22 10:56:34"}
+{"level":"info","message":"API Health check: http://localhost:3000/api/health","timestamp":"2025-09-22 10:56:34"}
+{"level":"info","message":"::1 - - [22/Sep/2025:13:56:37 +0000] \"POST /api/auth/login HTTP/1.1\" 200 327 \"-\" \"PostmanRuntime/7.46.1\"","timestamp":"2025-09-22 10:56:37"}
+{"level":"info","message":"Servidor corriendo en el puerto 3000","timestamp":"2025-09-22 10:57:47"}
+{"level":"info","message":"API Health check: http://localhost:3000/api/health","timestamp":"2025-09-22 10:57:47"}
+{"level":"info","message":"Login exitoso para el usuario: admin@gmail.com","timestamp":"2025-09-22 10:57:51"}
+{"level":"info","message":"::1 - - [22/Sep/2025:13:57:51 +0000] \"POST /api/auth/login HTTP/1.1\" 200 327 \"-\" \"PostmanRuntime/7.46.1\"","timestamp":"2025-09-22 10:57:51"}
+{"level":"info","message":"Servidor corriendo en el puerto 3000","timestamp":"2025-09-22 10:59:17"}
+{"level":"info","message":"API Health check: http://localhost:3000/api/health","timestamp":"2025-09-22 10:59:17"}

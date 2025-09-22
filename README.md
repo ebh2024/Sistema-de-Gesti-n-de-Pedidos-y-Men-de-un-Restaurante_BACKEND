@@ -12,6 +12,7 @@ Backend API para el sistema de gestión de pedidos y menú de un restaurante, de
 - ✅ Control de acceso basado en roles
 - ✅ API RESTful completa
 - ✅ Manejo de errores y validaciones
+- ✅ Registro (Logging) robusto con Winston y Morgan
 
 ## Tecnologías Utilizadas
 
@@ -23,6 +24,8 @@ Backend API para el sistema de gestión de pedidos y menú de un restaurante, de
 - **bcryptjs** - Hash de contraseñas
 - **nodemailer** - Envío de emails
 - **CORS** - Manejo de cross-origin requests
+- **Winston** - Librería de logging para Node.js
+- **Morgan** - Middleware de logging HTTP para Express.js
 
 ## Instalación y Configuración
 
@@ -251,6 +254,17 @@ Ejemplo de respuesta de error:
   "message": "Acceso denegado: rol insuficiente"
 }
 ```
+
+## Registro (Logging)
+
+El sistema de backend ahora incorpora un robusto sistema de registro (logging) utilizando **Winston** para logs a nivel de aplicación y **Morgan** para logs de solicitudes HTTP.
+
+- **Winston**: Configurado para capturar logs en diferentes niveles (info, warn, error) y enviarlos a:
+    - **Consola**: Para visibilidad inmediata durante el desarrollo.
+    - **Archivos**: `combined.log` para todos los logs y `error.log` para logs de nivel `error` y superiores, facilitando la auditoría y depuración en entornos de producción.
+- **Morgan**: Integrado para registrar automáticamente todas las solicitudes HTTP entrantes, proporcionando detalles como el método, la URL, el estado de la respuesta y el tiempo de respuesta.
+
+Este sistema mejora significativamente la capacidad de monitorear el comportamiento de la aplicación, diagnosticar problemas y asegurar la trazabilidad de eventos importantes.
 
 ## Seguridad
 
