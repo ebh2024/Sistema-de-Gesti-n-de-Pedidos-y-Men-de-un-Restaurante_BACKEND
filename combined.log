@@ -1,0 +1,4 @@
+{"level":"info","message":"Servidor corriendo en el puerto 3000","timestamp":"2025-09-22 10:34:27"}
+{"level":"info","message":"API Health check: http://localhost:3000/api/health","timestamp":"2025-09-22 10:34:27"}
+{"level":"info","message":"::1 - - [22/Sep/2025:13:34:40 +0000] \"GET /api/health HTTP/1.1\" 200 82 \"-\" \"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36\"","timestamp":"2025-09-22 10:34:40"}
+{"level":"info","message":"::1 - - [22/Sep/2025:13:34:49 +0000] \"GET /favicon.ico HTTP/1.1\" - - \"http://localhost:3000/api/health\" \"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36\"","timestamp":"2025-09-22 10:34:49"}

@@ -1,6 +1,7 @@
 const { Order, OrderDetail, Table, User, Dish, sequelize } = require('../models');
 const { Op } = require('sequelize');
 const AppError = require('../utils/AppError');
+const logger = require('../utils/logger'); // Importar el logger
 
 const getAllOrders = async (req, res, next) => {
     try {
@@ -30,8 +31,10 @@ const getAllOrders = async (req, res, next) => {
             mesero_nombre: order.mesero.nombre
         }));
 
+        logger.info(`Se obtuvieron ${formattedOrders.length} pedidos.`);
         res.json(formattedOrders);
     } catch (error) {
+        logger.error(`Error al obtener todos los pedidos: ${error.message}`);
         next(error);
     }
 };
@@ -88,8 +91,10 @@ const getOrderById = async (req, res, next) => {
             }))
         };
 
+        logger.info(`Se obtuvo el pedido con ID: ${id} exitosamente.`);
         res.json(formattedOrder);
     } catch (error) {
+        logger.error(`Error al obtener pedido por ID ${id}: ${error.message}`);
         next(error);
     }
 };
@@ -161,7 +166,7 @@ const createOrder = async (req, res, next) => {
         );
 
         await transaction.commit();
-
+        logger.info(`Pedido creado exitosamente con ID: ${order.id} por el mesero ${req.user.id}. Total: ${total}`);
         res.status(201).json({
             message: 'Pedido creado exitosamente',
             orderId: order.id,
@@ -169,6 +174,7 @@ const createOrder = async (req, res, next) => {
         });
     } catch (error) {
         await transaction.rollback();
+        logger.error(`Error al crear pedido: ${error.message}`);
         next(error);
     }
 };
@@ -207,8 +213,10 @@ const updateOrderStatus = async (req, res, next) => {
             );
         }
 
+        logger.info(`Estado del pedido con ID: ${id} actualizado a '${estado}' exitosamente.`);
         res.json({ message: 'Estado del pedido actualizado exitosamente' });
     } catch (error) {
+        logger.error(`Error al actualizar estado del pedido con ID ${id}: ${error.message}`);
         next(error);
     }
 };
@@ -252,10 +260,11 @@ const deleteOrder = async (req, res, next) => {
         });
 
         await transaction.commit();
-
+        logger.info(`Pedido con ID: ${id} eliminado exitosamente.`);
         res.json({ message: 'Pedido eliminado exitosamente' });
     } catch (error) {
         await transaction.rollback();
+        logger.error(`Error al eliminar pedido con ID ${id}: ${error.message}`);
         next(error);
     }
 };

@@ -1,13 +1,16 @@
 const { Table } = require('../models');
 const AppError = require('../utils/AppError');
+const logger = require('../utils/logger'); // Importar el logger
 
 const getAllTables = async (req, res, next) => {
     try {
         const tables = await Table.findAll({
             order: [['numero', 'ASC']]
         });
+        logger.info('Se obtuvieron todas las mesas exitosamente.');
         res.json(tables);
     } catch (error) {
+        logger.error(`Error al obtener todas las mesas: ${error.message}`);
         next(error);
     }
 };
@@ -21,8 +24,10 @@ const getTableById = async (req, res, next) => {
             return next(new AppError('Mesa no encontrada', 404));
         }
 
+        logger.info(`Se obtuvo la mesa con ID: ${id} exitosamente.`);
         res.json(table);
     } catch (error) {
+        logger.error(`Error al obtener mesa por ID ${id}: ${error.message}`);
         next(error);
     }
 };
@@ -47,11 +52,13 @@ const createTable = async (req, res, next) => {
             disponible: disponible !== undefined ? disponible : 1
         });
 
+        logger.info(`Mesa creada exitosamente con ID: ${table.id}, número: ${table.numero}`);
         res.status(201).json({
             message: 'Mesa creada exitosamente',
             tableId: table.id
         });
     } catch (error) {
+        logger.error(`Error al crear mesa: ${error.message}`);
         next(error);
     }
 };
@@ -84,8 +91,10 @@ const updateTable = async (req, res, next) => {
             return next(new AppError('Mesa no encontrada', 404));
         }
 
+        logger.info(`Mesa con ID: ${id} actualizada exitosamente.`);
         res.json({ message: 'Mesa actualizada exitosamente' });
     } catch (error) {
+        logger.error(`Error al actualizar mesa con ID ${id}: ${error.message}`);
         next(error);
     }
 };
@@ -100,8 +109,10 @@ const deleteTable = async (req, res, next) => {
             return next(new AppError('Mesa no encontrada', 404));
         }
 
+        logger.info(`Mesa con ID: ${id} eliminada exitosamente.`);
         res.json({ message: 'Mesa eliminada exitosamente' });
     } catch (error) {
+        logger.error(`Error al eliminar mesa con ID ${id}: ${error.message}`);
         next(error);
     }
 };

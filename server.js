@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const morgan = require('morgan'); // Importar morgan
 require('dotenv').config();
 
 // Importar modelos para establecer asociaciones
@@ -8,10 +9,16 @@ require('./models');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Importar el logger
+const logger = require('./utils/logger');
+
 // Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Configurar Morgan para registrar solicitudes HTTP
+app.use(morgan('combined', { stream: { write: message => logger.info(message.trim()) } }));
 
 // Rutas
 const authRoutes = require('./routes/auth');
@@ -45,8 +52,8 @@ app.use(globalErrorHandler);
 
 // Iniciar servidor
 app.listen(PORT, () => {
-    console.log(`Servidor corriendo en el puerto ${PORT}`);
-    console.log(`API Health check: http://localhost:${PORT}/api/health`);
+    logger.info(`Servidor corriendo en el puerto ${PORT}`);
+    logger.info(`API Health check: http://localhost:${PORT}/api/health`);
 });
 
 module.exports = app;

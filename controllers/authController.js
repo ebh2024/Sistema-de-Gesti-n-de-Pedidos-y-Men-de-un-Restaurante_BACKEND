@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 const { User } = require('../models');
 const AppError = require('../utils/AppError');
+const logger = require('../utils/logger'); // Importar el logger
 require('dotenv').config();
 
 const transporter = nodemailer.createTransport({
@@ -39,11 +40,13 @@ const register = async (req, res, next) => {
             rol
         });
 
+        logger.info(`Usuario registrado exitosamente: ${user.correo}`);
         res.status(201).json({
             message: 'Usuario registrado exitosamente',
             userId: user.id
         });
     } catch (error) {
+        logger.error(`Error al registrar usuario: ${error.message}`);
         next(error);
     }
 };
@@ -65,12 +68,14 @@ const login = async (req, res, next) => {
         });
 
         if (!user) {
+            logger.warn(`Intento de login fallido: usuario no encontrado para el correo ${correo}`);
             return next(new AppError('Credenciales inválidas', 401));
         }
 
         // Verificar contraseña
         const isValidPassword = await bcrypt.compare(contraseña, user.contraseña);
         if (!isValidPassword) {
+            logger.warn(`Intento de login fallido: contraseña inválida para el correo ${correo}`);
             return next(new AppError('Credenciales inválidas', 401));
         }
 
@@ -92,6 +97,7 @@ const login = async (req, res, next) => {
             }
         });
     } catch (error) {
+        logger.error(`Error durante el login: ${error.message}`);
         next(error);
     }
 };
@@ -124,10 +130,10 @@ const forgotPassword = async (req, res, next) => {
         );
 
         // Enviar email (simulado por ahora)
-        console.log(`Reset token para ${user.correo}: ${resetToken}`);
-
+        logger.info(`Generado token de reseteo para ${user.correo}`);
         res.json({ message: 'Instrucciones de reset enviadas al correo' });
     } catch (error) {
+        logger.error(`Error en forgotPassword para ${correo}: ${error.message}`);
         next(error);
     }
 };
@@ -152,8 +158,10 @@ const resetPassword = async (req, res, next) => {
             { where: { id: decoded.id } }
         );
 
+        logger.info(`Contraseña actualizada para el usuario ID: ${decoded.id}`);
         res.json({ message: 'Contraseña actualizada exitosamente' });
     } catch (error) {
+        logger.error(`Error al resetear contraseña: ${error.message}`);
         next(new AppError('Token inválido o expirado', 400));
     }
 };

@@ -1,13 +1,16 @@
 const { Dish } = require('../models');
 const AppError = require('../utils/AppError');
+const logger = require('../utils/logger'); // Importar el logger
 
 const getAllDishes = async (req, res, next) => {
     try {
         const dishes = await Dish.findAll({
             order: [['created_at', 'DESC']]
         });
+        logger.info('Se obtuvieron todos los platos exitosamente.');
         res.json(dishes);
     } catch (error) {
+        logger.error(`Error al obtener todos los platos: ${error.message}`);
         next(error);
     }
 };
@@ -21,8 +24,10 @@ const getDishById = async (req, res, next) => {
             return next(new AppError('Plato no encontrado', 404));
         }
 
+        logger.info(`Se obtuvo el plato con ID: ${id} exitosamente.`);
         res.json(dish);
     } catch (error) {
+        logger.error(`Error al obtener plato por ID ${id}: ${error.message}`);
         next(error);
     }
 };
@@ -42,11 +47,13 @@ const createDish = async (req, res, next) => {
             disponibilidad: disponibilidad !== undefined ? disponibilidad : 1
         });
 
+        logger.info(`Plato creado exitosamente con ID: ${dish.id}`);
         res.status(201).json({
             message: 'Plato creado exitosamente',
             dishId: dish.id
         });
     } catch (error) {
+        logger.error(`Error al crear plato: ${error.message}`);
         next(error);
     }
 };
@@ -65,8 +72,10 @@ const updateDish = async (req, res, next) => {
             return next(new AppError('Plato no encontrado', 404));
         }
 
+        logger.info(`Plato con ID: ${id} actualizado exitosamente.`);
         res.json({ message: 'Plato actualizado exitosamente' });
     } catch (error) {
+        logger.error(`Error al actualizar plato con ID ${id}: ${error.message}`);
         next(error);
     }
 };
@@ -81,8 +90,10 @@ const deleteDish = async (req, res, next) => {
             return next(new AppError('Plato no encontrado', 404));
         }
 
+        logger.info(`Plato con ID: ${id} eliminado exitosamente.`);
         res.json({ message: 'Plato eliminado exitosamente' });
     } catch (error) {
+        logger.error(`Error al eliminar plato con ID ${id}: ${error.message}`);
         next(error);
     }
 };

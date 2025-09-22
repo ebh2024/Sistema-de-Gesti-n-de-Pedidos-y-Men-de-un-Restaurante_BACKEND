@@ -1,5 +1,6 @@
 const AppError = require('../utils/AppError');
 const { validationResult } = require('express-validator');
+const logger = require('../utils/logger'); // Importar el logger
 
 const handleValidationErrors = (req, res, next) => {
     const errors = validationResult(req);
@@ -28,6 +29,7 @@ const handleValidationErrorDB = err => {
 };
 
 const sendErrorDev = (err, res) => {
+    logger.error('ERROR (Development) 💥', err);
     res.status(err.statusCode).json({
         status: err.status,
         error: err,
@@ -47,7 +49,7 @@ const sendErrorProd = (err, res) => {
         // Programming or other unknown error: don't leak error details
     } else {
         // 1) Log error
-        console.error('ERROR 💥', err);
+        logger.error('ERROR (Production) 💥', err);
 
         // 2) Send generic message
         res.status(500).json({
