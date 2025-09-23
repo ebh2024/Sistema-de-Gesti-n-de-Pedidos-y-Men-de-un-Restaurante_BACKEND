@@ -49,3 +49,14 @@
 {"level":"info","message":"::1 - - [22/Sep/2025:13:57:51 +0000] \"POST /api/auth/login HTTP/1.1\" 200 327 \"-\" \"PostmanRuntime/7.46.1\"","timestamp":"2025-09-22 10:57:51"}
 {"level":"info","message":"Servidor corriendo en el puerto 3000","timestamp":"2025-09-22 10:59:17"}
 {"level":"info","message":"API Health check: http://localhost:3000/api/health","timestamp":"2025-09-22 10:59:17"}
+{"level":"info","message":"Servidor corriendo en el puerto 3000","timestamp":"2025-09-23 09:36:21"}
+{"level":"info","message":"API Health check: http://localhost:3000/api/health","timestamp":"2025-09-23 09:36:21"}
+{"level":"info","message":"Login exitoso para el usuario: admin@gmail.com","timestamp":"2025-09-23 09:36:34"}
+{"level":"info","message":"::1 - - [23/Sep/2025:12:36:34 +0000] \"POST /api/auth/login HTTP/1.1\" 200 327 \"-\" \"PostmanRuntime/7.46.1\"","timestamp":"2025-09-23 09:36:34"}
+{"level":"info","message":"::1 - - [23/Sep/2025:12:37:58 +0000] \"GET /api/dishes HTTP/1.1\" 401 39 \"-\" \"PostmanRuntime/7.46.1\"","timestamp":"2025-09-23 09:37:58"}
+{"level":"info","message":"Login exitoso para el usuario: admin@gmail.com","timestamp":"2025-09-23 09:38:18"}
+{"level":"info","message":"::1 - - [23/Sep/2025:12:38:18 +0000] \"POST /api/auth/login HTTP/1.1\" 200 327 \"-\" \"PostmanRuntime/7.46.1\"","timestamp":"2025-09-23 09:38:18"}
+{"level":"info","message":"::1 - - [23/Sep/2025:12:39:05 +0000] \"POST /api/dishes HTTP/1.1\" 403 29 \"-\" \"PostmanRuntime/7.46.1\"","timestamp":"2025-09-23 09:39:05"}
+{"level":"info","message":"::1 - - [23/Sep/2025:12:39:36 +0000] \"POST /api/dishes HTTP/1.1\" - - \"-\" \"PostmanRuntime/7.46.1\"","timestamp":"2025-09-23 09:39:36"}
+{"level":"info","message":"::1 - - [23/Sep/2025:12:40:32 +0000] \"POST /api/dishes HTTP/1.1\" 401 39 \"-\" \"PostmanRuntime/7.46.1\"","timestamp":"2025-09-23 09:40:32"}
+{"level":"info","message":"::1 - - [23/Sep/2025:12:41:25 +0000] \"POST /api/dishes HTTP/1.1\" 403 29 \"-\" \"PostmanRuntime/7.46.1\"","timestamp":"2025-09-23 09:41:25"}
