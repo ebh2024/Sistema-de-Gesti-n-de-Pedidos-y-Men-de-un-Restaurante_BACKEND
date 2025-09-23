@@ -84,3 +84,150 @@
 {"level":"info","message":"::1 - - [23/Sep/2025:12:48:22 +0000] \"GET /api/dishes HTTP/1.1\" 200 2 \"-\" \"PostmanRuntime/7.46.1\"","timestamp":"2025-09-23 09:48:22"}
 {"level":"info","message":"Login exitoso para el usuario: admin@gmail.com","timestamp":"2025-09-23 09:49:48"}
 {"level":"info","message":"::1 - - [23/Sep/2025:12:49:48 +0000] \"POST /api/auth/login HTTP/1.1\" 200 327 \"-\" \"PostmanRuntime/7.46.1\"","timestamp":"2025-09-23 09:49:48"}
+{"level":"info","message":"Servidor corriendo en el puerto 3000","timestamp":"2025-09-23 09:58:43"}
+{"level":"info","message":"API Health check disponible en: http://localhost:3000/api/health","timestamp":"2025-09-23 09:58:43"}
+{"level":"info","message":"Login exitoso para el usuario: admin@gmail.com","timestamp":"2025-09-23 09:58:45"}
+{"level":"info","message":"::1 - - [23/Sep/2025:12:58:45 +0000] \"POST /api/auth/login HTTP/1.1\" 200 327 \"-\" \"PostmanRuntime/7.46.1\"","timestamp":"2025-09-23 09:58:45"}
+{"level":"info","message":"Servidor corriendo en el puerto 3000","timestamp":"2025-09-23 10:07:14"}
+{"level":"info","message":"API Health check disponible en: http://localhost:3000/api/health","timestamp":"2025-09-23 10:07:14"}
+{"level":"info","message":"Servidor corriendo en el puerto 3000","timestamp":"2025-09-23 10:11:40"}
+{"level":"info","message":"API Health check disponible en: http://localhost:3000/api/health","timestamp":"2025-09-23 10:11:40"}
+{"level":"info","message":"Servidor corriendo en el puerto 3000","timestamp":"2025-09-23 10:13:31"}
+{"level":"info","message":"API Health check disponible en: http://localhost:3000/api/health","timestamp":"2025-09-23 10:13:31"}
+{"level":"info","message":"Servidor corriendo en el puerto 3000","timestamp":"2025-09-23 10:13:59"}
+{"level":"info","message":"API Health check disponible en: http://localhost:3000/api/health","timestamp":"2025-09-23 10:13:59"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [23/Sep/2025:13:13:59 +0000] \"GET /api/health HTTP/1.1\" 200 82 \"-\" \"node-superagent/3.8.3\"","timestamp":"2025-09-23 10:13:59"}
+{"level":"error","message":"Error al registrar usuario: Data truncated for column 'rol' at row 1","stack":"Error\n    at Query.run (/home/usuario/Desktop/Sistema de Gestión de Pedidos y Menú de un Restaurante/backend/node_modules/sequelize/lib/dialects/mysql/query.js:52:25)\n    at /home/usuario/Desktop/Sistema de Gestión de Pedidos y Menú de un Restaurante/backend/node_modules/sequelize/lib/sequelize.js:315:28\n    at async MySQLQueryInterface.insert (/home/usuario/Desktop/Sistema de Gestión de Pedidos y Menú de un Restaurante/backend/node_modules/sequelize/lib/dialects/abstract/query-interface.js:308:21)\n    at async model.save (/home/usuario/Desktop/Sistema de Gestión de Pedidos y Menú de un Restaurante/backend/node_modules/sequelize/lib/model.js:2490:35)\n    at async User.create (/home/usuario/Desktop/Sistema de Gestión de Pedidos y Menú de un Restaurante/backend/node_modules/sequelize/lib/model.js:1362:12)\n    at async register (/home/usuario/Desktop/Sistema de Gestión de Pedidos y Menú de un Restaurante/backend/controllers/authController.js:103:22)","timestamp":"2025-09-23 10:13:59"}
+{"level":"warn","message":"Intento de registro con correo ya existente: test@example.com","timestamp":"2025-09-23 10:14:09"}
+{"level":"warn","message":"Intento de registro con campos incompletos.","timestamp":"2025-09-23 10:14:19"}
+{"level":"info","message":"Login exitoso para el usuario: test@example.com","timestamp":"2025-09-23 10:14:29"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [23/Sep/2025:13:14:29 +0000] \"POST /api/auth/login HTTP/1.1\" 200 338 \"-\" \"node-superagent/3.8.3\"","timestamp":"2025-09-23 10:14:29"}
+{"level":"warn","message":"Intento de login fallido: contraseña inválida para el correo test@example.com","timestamp":"2025-09-23 10:14:29"}
+{"level":"warn","message":"Rate limit excedido para ruta de autenticación desde IP: ::ffff:127.0.0.1","timestamp":"2025-09-23 10:14:39"}
+{"level":"info","message":"Servidor corriendo en el puerto 3000","timestamp":"2025-09-23 10:15:45"}
+{"level":"info","message":"API Health check disponible en: http://localhost:3000/api/health","timestamp":"2025-09-23 10:15:45"}
+{"level":"info","message":"Servidor corriendo en el puerto 3000","timestamp":"2025-09-23 10:17:20"}
+{"level":"info","message":"API Health check disponible en: http://localhost:3000/api/health","timestamp":"2025-09-23 10:17:20"}
+{"level":"info","message":"Servidor corriendo en el puerto 3000","timestamp":"2025-09-23 10:17:39"}
+{"level":"info","message":"API Health check disponible en: http://localhost:3000/api/health","timestamp":"2025-09-23 10:17:39"}
+{"level":"info","message":"Servidor corriendo en el puerto 3000","timestamp":"2025-09-23 10:19:04"}
+{"level":"info","message":"API Health check disponible en: http://localhost:3000/api/health","timestamp":"2025-09-23 10:19:04"}
+{"level":"info","message":"Servidor corriendo en el puerto 3000","timestamp":"2025-09-23 10:19:23"}
+{"level":"info","message":"API Health check disponible en: http://localhost:3000/api/health","timestamp":"2025-09-23 10:19:23"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [23/Sep/2025:13:19:23 +0000] \"GET /api/health HTTP/1.1\" 200 82 \"-\" \"node-superagent/3.8.3\"","timestamp":"2025-09-23 10:19:23"}
+{"level":"info","message":"Usuario registrado exitosamente: newuser@example.com con ID: 10","timestamp":"2025-09-23 10:19:23"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [23/Sep/2025:13:19:23 +0000] \"POST /api/auth/register HTTP/1.1\" 201 57 \"-\" \"node-superagent/3.8.3\"","timestamp":"2025-09-23 10:19:23"}
+{"level":"warn","message":"Intento de registro con correo ya existente: testuser@example.com","timestamp":"2025-09-23 10:19:23"}
+{"level":"warn","message":"Intento de registro con campos incompletos.","timestamp":"2025-09-23 10:19:33"}
+{"level":"info","message":"Login exitoso para el usuario: testuser@example.com","timestamp":"2025-09-23 10:19:43"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [23/Sep/2025:13:19:43 +0000] \"POST /api/auth/login HTTP/1.1\" 200 345 \"-\" \"node-superagent/3.8.3\"","timestamp":"2025-09-23 10:19:43"}
+{"level":"warn","message":"Intento de login fallido: contraseña inválida para el correo testuser@example.com","timestamp":"2025-09-23 10:19:43"}
+{"level":"warn","message":"Rate limit excedido para ruta de autenticación desde IP: ::ffff:127.0.0.1","timestamp":"2025-09-23 10:19:53"}
+{"level":"info","message":"Servidor corriendo en el puerto 3000","timestamp":"2025-09-23 10:20:39"}
+{"level":"info","message":"API Health check disponible en: http://localhost:3000/api/health","timestamp":"2025-09-23 10:20:39"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [23/Sep/2025:13:20:40 +0000] \"GET /api/health HTTP/1.1\" 200 82 \"-\" \"node-superagent/3.8.3\"","timestamp":"2025-09-23 10:20:40"}
+{"level":"info","message":"Usuario registrado exitosamente: newuser@example.com con ID: 2","timestamp":"2025-09-23 10:20:40"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [23/Sep/2025:13:20:40 +0000] \"POST /api/auth/register HTTP/1.1\" 201 56 \"-\" \"node-superagent/3.8.3\"","timestamp":"2025-09-23 10:20:40"}
+{"level":"warn","message":"Intento de registro con correo ya existente: testuser@example.com","timestamp":"2025-09-23 10:20:40"}
+{"level":"warn","message":"Intento de registro con campos incompletos.","timestamp":"2025-09-23 10:20:50"}
+{"level":"info","message":"Login exitoso para el usuario: testuser@example.com","timestamp":"2025-09-23 10:21:00"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [23/Sep/2025:13:21:00 +0000] \"POST /api/auth/login HTTP/1.1\" 200 345 \"-\" \"node-superagent/3.8.3\"","timestamp":"2025-09-23 10:21:00"}
+{"level":"warn","message":"Intento de login fallido: contraseña inválida para el correo testuser@example.com","timestamp":"2025-09-23 10:21:00"}
+{"level":"warn","message":"Rate limit excedido para ruta de autenticación desde IP: ::ffff:127.0.0.1","timestamp":"2025-09-23 10:21:10"}
+{"level":"info","message":"Servidor corriendo en el puerto 3000","timestamp":"2025-09-23 10:23:08"}
+{"level":"info","message":"API Health check disponible en: http://localhost:3000/api/health","timestamp":"2025-09-23 10:23:08"}
+{"level":"info","message":"Servidor corriendo en el puerto 3000","timestamp":"2025-09-23 10:23:28"}
+{"level":"info","message":"API Health check disponible en: http://localhost:3000/api/health","timestamp":"2025-09-23 10:23:28"}
+{"level":"info","message":"Servidor corriendo en el puerto 3000","timestamp":"2025-09-23 10:25:20"}
+{"level":"info","message":"API Health check disponible en: http://localhost:3000/api/health","timestamp":"2025-09-23 10:25:20"}
+{"level":"info","message":"Servidor corriendo en el puerto 3000","timestamp":"2025-09-23 10:25:47"}
+{"level":"info","message":"API Health check disponible en: http://localhost:3000/api/health","timestamp":"2025-09-23 10:25:47"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [23/Sep/2025:13:25:48 +0000] \"GET /api/health HTTP/1.1\" 200 82 \"-\" \"node-superagent/3.8.3\"","timestamp":"2025-09-23 10:25:48"}
+{"level":"info","message":"Usuario registrado exitosamente: newuser@example.com con ID: 2","timestamp":"2025-09-23 10:25:48"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [23/Sep/2025:13:25:48 +0000] \"POST /api/auth/register HTTP/1.1\" 201 56 \"-\" \"node-superagent/3.8.3\"","timestamp":"2025-09-23 10:25:48"}
+{"level":"warn","message":"Intento de registro con correo ya existente: testuser@example.com","timestamp":"2025-09-23 10:25:48"}
+{"level":"warn","message":"Intento de registro con campos incompletos.","timestamp":"2025-09-23 10:25:58"}
+{"level":"info","message":"Login exitoso para el usuario: testuser@example.com","timestamp":"2025-09-23 10:26:08"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [23/Sep/2025:13:26:08 +0000] \"POST /api/auth/login HTTP/1.1\" 200 345 \"-\" \"node-superagent/3.8.3\"","timestamp":"2025-09-23 10:26:08"}
+{"level":"warn","message":"Intento de login fallido: contraseña inválida para el correo testuser@example.com","timestamp":"2025-09-23 10:26:08"}
+{"level":"warn","message":"Rate limit excedido para ruta de autenticación desde IP: ::ffff:127.0.0.1","timestamp":"2025-09-23 10:26:18"}
+{"level":"info","message":"Servidor corriendo en el puerto 3000","timestamp":"2025-09-23 10:26:58"}
+{"level":"info","message":"API Health check disponible en: http://localhost:3000/api/health","timestamp":"2025-09-23 10:26:58"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [23/Sep/2025:13:26:59 +0000] \"GET /api/health HTTP/1.1\" 200 82 \"-\" \"node-superagent/3.8.3\"","timestamp":"2025-09-23 10:26:59"}
+{"level":"info","message":"Usuario registrado exitosamente: newuser@example.com con ID: 2","timestamp":"2025-09-23 10:26:59"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [23/Sep/2025:13:26:59 +0000] \"POST /api/auth/register HTTP/1.1\" 201 56 \"-\" \"node-superagent/3.8.3\"","timestamp":"2025-09-23 10:26:59"}
+{"level":"warn","message":"Intento de registro con correo ya existente: testuser@example.com","timestamp":"2025-09-23 10:26:59"}
+{"level":"warn","message":"Intento de registro con campos incompletos.","timestamp":"2025-09-23 10:27:09"}
+{"level":"info","message":"Login exitoso para el usuario: testuser@example.com","timestamp":"2025-09-23 10:27:19"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [23/Sep/2025:13:27:19 +0000] \"POST /api/auth/login HTTP/1.1\" 200 345 \"-\" \"node-superagent/3.8.3\"","timestamp":"2025-09-23 10:27:19"}
+{"level":"warn","message":"Intento de login fallido: contraseña inválida para el correo testuser@example.com","timestamp":"2025-09-23 10:27:19"}
+{"level":"warn","message":"Rate limit excedido para ruta de autenticación desde IP: ::ffff:127.0.0.1","timestamp":"2025-09-23 10:27:29"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [23/Sep/2025:13:46:04 +0000] \"GET /api/health HTTP/1.1\" 200 82 \"-\" \"node-superagent/3.8.3\"","timestamp":"2025-09-23 10:46:04"}
+{"level":"info","message":"Usuario registrado exitosamente: newuser@example.com con ID: 2","timestamp":"2025-09-23 10:46:04"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [23/Sep/2025:13:46:04 +0000] \"POST /api/auth/register HTTP/1.1\" 201 56 \"-\" \"node-superagent/3.8.3\"","timestamp":"2025-09-23 10:46:04"}
+{"level":"warn","message":"Intento de registro con correo ya existente: testuser@example.com","timestamp":"2025-09-23 10:46:04"}
+{"level":"warn","message":"Intento de registro con campos incompletos.","timestamp":"2025-09-23 10:46:14"}
+{"level":"info","message":"Login exitoso para el usuario: testuser@example.com","timestamp":"2025-09-23 10:46:24"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [23/Sep/2025:13:46:24 +0000] \"POST /api/auth/login HTTP/1.1\" 200 345 \"-\" \"node-superagent/3.8.3\"","timestamp":"2025-09-23 10:46:24"}
+{"level":"warn","message":"Intento de login fallido: contraseña inválida para el correo testuser@example.com","timestamp":"2025-09-23 10:46:24"}
+{"level":"warn","message":"Rate limit excedido para ruta de autenticación desde IP: ::ffff:127.0.0.1","timestamp":"2025-09-23 10:46:34"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [23/Sep/2025:13:48:05 +0000] \"GET /api/health HTTP/1.1\" 200 82 \"-\" \"node-superagent/3.8.3\"","timestamp":"2025-09-23 10:48:05"}
+{"level":"info","message":"Usuario registrado exitosamente: newuser@example.com con ID: 2","timestamp":"2025-09-23 10:48:05"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [23/Sep/2025:13:48:05 +0000] \"POST /api/auth/register HTTP/1.1\" 201 56 \"-\" \"node-superagent/3.8.3\"","timestamp":"2025-09-23 10:48:05"}
+{"level":"warn","message":"Intento de registro con correo ya existente: testuser@example.com","timestamp":"2025-09-23 10:48:05"}
+{"level":"warn","message":"Intento de registro con campos incompletos.","timestamp":"2025-09-23 10:48:15"}
+{"level":"info","message":"Login exitoso para el usuario: testuser@example.com","timestamp":"2025-09-23 10:48:25"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [23/Sep/2025:13:48:25 +0000] \"POST /api/auth/login HTTP/1.1\" 200 345 \"-\" \"node-superagent/3.8.3\"","timestamp":"2025-09-23 10:48:25"}
+{"level":"warn","message":"Intento de login fallido: contraseña inválida para el correo testuser@example.com","timestamp":"2025-09-23 10:48:25"}
+{"level":"warn","message":"Rate limit excedido para ruta de autenticación desde IP: ::ffff:127.0.0.1","timestamp":"2025-09-23 10:48:35"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [23/Sep/2025:13:51:04 +0000] \"GET /api/health HTTP/1.1\" 200 82 \"-\" \"node-superagent/3.8.3\"","timestamp":"2025-09-23 10:51:04"}
+{"level":"info","message":"Usuario registrado exitosamente: newuser@example.com con ID: 2","timestamp":"2025-09-23 10:51:04"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [23/Sep/2025:13:51:04 +0000] \"POST /api/auth/register HTTP/1.1\" 201 56 \"-\" \"node-superagent/3.8.3\"","timestamp":"2025-09-23 10:51:04"}
+{"level":"warn","message":"Intento de registro con correo ya existente: testuser@example.com","timestamp":"2025-09-23 10:51:04"}
+{"isOperational":true,"level":"error","message":"ERROR (Development) 💥 El correo ya está registrado","stack":"Error: El correo ya está registrado\n    at register (/home/usuario/Desktop/Sistema de Gestión de Pedidos y Menú de un Restaurante/backend/controllers/authController.js:96:25)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)","status":"fail","statusCode":400,"timestamp":"2025-09-23 10:51:04"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [23/Sep/2025:13:51:04 +0000] \"POST /api/auth/register HTTP/1.1\" 400 396 \"-\" \"node-superagent/3.8.3\"","timestamp":"2025-09-23 10:51:04"}
+{"level":"warn","message":"Intento de registro con campos incompletos.","timestamp":"2025-09-23 10:51:04"}
+{"isOperational":true,"level":"error","message":"ERROR (Development) 💥 Todos los campos son requeridos","stack":"Error: Todos los campos son requeridos\n    at register (/home/usuario/Desktop/Sistema de Gestión de Pedidos y Menú de un Restaurante/backend/controllers/authController.js:89:25)\n    at Layer.handleRequest (/home/usuario/Desktop/Sistema de Gestión de Pedidos y Menú de un Restaurante/backend/node_modules/router/lib/layer.js:152:17)\n    at next (/home/usuario/Desktop/Sistema de Gestión de Pedidos y Menú de un Restaurante/backend/node_modules/router/lib/route.js:157:13)\n    at middleware (/home/usuario/Desktop/Sistema de Gestión de Pedidos y Menú de un Restaurante/backend/node_modules/express-validator/lib/middlewares/check.js:16:13)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)","status":"fail","statusCode":400,"timestamp":"2025-09-23 10:51:04"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [23/Sep/2025:13:51:04 +0000] \"POST /api/auth/register HTTP/1.1\" 400 869 \"-\" \"node-superagent/3.8.3\"","timestamp":"2025-09-23 10:51:04"}
+{"level":"info","message":"Login exitoso para el usuario: testuser@example.com","timestamp":"2025-09-23 10:51:04"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [23/Sep/2025:13:51:04 +0000] \"POST /api/auth/login HTTP/1.1\" 200 345 \"-\" \"node-superagent/3.8.3\"","timestamp":"2025-09-23 10:51:04"}
+{"level":"warn","message":"Intento de login fallido: contraseña inválida para el correo testuser@example.com","timestamp":"2025-09-23 10:51:04"}
+{"isOperational":true,"level":"error","message":"ERROR (Development) 💥 Credenciales inválidas","stack":"Error: Credenciales inválidas\n    at login (/home/usuario/Desktop/Sistema de Gestión de Pedidos y Menú de un Restaurante/backend/controllers/authController.js:206:25)","status":"fail","statusCode":401,"timestamp":"2025-09-23 10:51:04"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [23/Sep/2025:13:51:04 +0000] \"POST /api/auth/login HTTP/1.1\" 401 298 \"-\" \"node-superagent/3.8.3\"","timestamp":"2025-09-23 10:51:04"}
+{"level":"warn","message":"Rate limit excedido para ruta de autenticación desde IP: ::ffff:127.0.0.1","timestamp":"2025-09-23 10:51:04"}
+{"isOperational":true,"level":"error","message":"ERROR (Development) 💥 Demasiados intentos de autenticación, por favor intente de nuevo después de 15 minutos","stack":"Error: Demasiados intentos de autenticación, por favor intente de nuevo después de 15 minutos\n    at Object.handler (/home/usuario/Desktop/Sistema de Gestión de Pedidos y Menú de un Restaurante/backend/routes/auth.js:19:14)\n    at /home/usuario/Desktop/Sistema de Gestión de Pedidos y Menú de un Restaurante/backend/node_modules/express-rate-limit/dist/index.cjs:896:16\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async /home/usuario/Desktop/Sistema de Gestión de Pedidos y Menú de un Restaurante/backend/node_modules/express-rate-limit/dist/index.cjs:782:5","status":"fail","statusCode":429,"timestamp":"2025-09-23 10:51:04"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [23/Sep/2025:13:51:04 +0000] \"POST /api/auth/login HTTP/1.1\" 429 808 \"-\" \"node-superagent/3.8.3\"","timestamp":"2025-09-23 10:51:04"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [23/Sep/2025:13:55:04 +0000] \"GET /api/health HTTP/1.1\" 200 82 \"-\" \"node-superagent/3.8.3\"","timestamp":"2025-09-23 10:55:04"}
+{"level":"info","message":"Usuario registrado exitosamente: newuser@example.com con ID: 2","timestamp":"2025-09-23 10:55:05"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [23/Sep/2025:13:55:05 +0000] \"POST /api/auth/register HTTP/1.1\" 201 56 \"-\" \"node-superagent/3.8.3\"","timestamp":"2025-09-23 10:55:05"}
+{"level":"warn","message":"Intento de registro con correo ya existente: testuser@example.com","timestamp":"2025-09-23 10:55:05"}
+{"isOperational":true,"level":"error","message":"ERROR (Development) 💥 El correo ya está registrado","stack":"Error: El correo ya está registrado\n    at register (/home/usuario/Desktop/Sistema de Gestión de Pedidos y Menú de un Restaurante/backend/controllers/authController.js:96:25)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)","status":"fail","statusCode":400,"timestamp":"2025-09-23 10:55:05"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [23/Sep/2025:13:55:05 +0000] \"POST /api/auth/register HTTP/1.1\" 400 396 \"-\" \"node-superagent/3.8.3\"","timestamp":"2025-09-23 10:55:05"}
+{"level":"warn","message":"Intento de registro con campos incompletos.","timestamp":"2025-09-23 10:55:05"}
+{"isOperational":true,"level":"error","message":"ERROR (Development) 💥 Todos los campos son requeridos","stack":"Error: Todos los campos son requeridos\n    at register (/home/usuario/Desktop/Sistema de Gestión de Pedidos y Menú de un Restaurante/backend/controllers/authController.js:89:25)\n    at Layer.handleRequest (/home/usuario/Desktop/Sistema de Gestión de Pedidos y Menú de un Restaurante/backend/node_modules/router/lib/layer.js:152:17)\n    at next (/home/usuario/Desktop/Sistema de Gestión de Pedidos y Menú de un Restaurante/backend/node_modules/router/lib/route.js:157:13)\n    at middleware (/home/usuario/Desktop/Sistema de Gestión de Pedidos y Menú de un Restaurante/backend/node_modules/express-validator/lib/middlewares/check.js:16:13)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)","status":"fail","statusCode":400,"timestamp":"2025-09-23 10:55:05"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [23/Sep/2025:13:55:05 +0000] \"POST /api/auth/register HTTP/1.1\" 400 869 \"-\" \"node-superagent/3.8.3\"","timestamp":"2025-09-23 10:55:05"}
+{"level":"info","message":"Login exitoso para el usuario: testuser@example.com","timestamp":"2025-09-23 10:55:05"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [23/Sep/2025:13:55:05 +0000] \"POST /api/auth/login HTTP/1.1\" 200 345 \"-\" \"node-superagent/3.8.3\"","timestamp":"2025-09-23 10:55:05"}
+{"level":"warn","message":"Intento de login fallido: contraseña inválida para el correo testuser@example.com","timestamp":"2025-09-23 10:55:05"}
+{"isOperational":true,"level":"error","message":"ERROR (Development) 💥 Credenciales inválidas","stack":"Error: Credenciales inválidas\n    at login (/home/usuario/Desktop/Sistema de Gestión de Pedidos y Menú de un Restaurante/backend/controllers/authController.js:206:25)","status":"fail","statusCode":401,"timestamp":"2025-09-23 10:55:05"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [23/Sep/2025:13:55:05 +0000] \"POST /api/auth/login HTTP/1.1\" 401 298 \"-\" \"node-superagent/3.8.3\"","timestamp":"2025-09-23 10:55:05"}
+{"level":"warn","message":"Intento de login con campos incompletos.","timestamp":"2025-09-23 10:55:05"}
+{"isOperational":true,"level":"error","message":"ERROR (Development) 💥 Correo y contraseña son requeridos","stack":"Error: Correo y contraseña son requeridos\n    at login (/home/usuario/Desktop/Sistema de Gestión de Pedidos y Menú de un Restaurante/backend/controllers/authController.js:185:25)\n    at Layer.handleRequest (/home/usuario/Desktop/Sistema de Gestión de Pedidos y Menú de un Restaurante/backend/node_modules/router/lib/layer.js:152:17)\n    at next (/home/usuario/Desktop/Sistema de Gestión de Pedidos y Menú de un Restaurante/backend/node_modules/router/lib/route.js:157:13)\n    at middleware (/home/usuario/Desktop/Sistema de Gestión de Pedidos y Menú de un Restaurante/backend/node_modules/express-validator/lib/middlewares/check.js:16:13)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)","status":"fail","statusCode":400,"timestamp":"2025-09-23 10:55:05"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [23/Sep/2025:13:55:05 +0000] \"POST /api/auth/login HTTP/1.1\" 400 875 \"-\" \"node-superagent/3.8.3\"","timestamp":"2025-09-23 10:55:05"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [23/Sep/2025:13:56:12 +0000] \"GET /api/health HTTP/1.1\" 200 82 \"-\" \"node-superagent/3.8.3\"","timestamp":"2025-09-23 10:56:12"}
+{"level":"info","message":"Usuario registrado exitosamente: newuser@example.com con ID: 2","timestamp":"2025-09-23 10:56:12"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [23/Sep/2025:13:56:12 +0000] \"POST /api/auth/register HTTP/1.1\" 201 56 \"-\" \"node-superagent/3.8.3\"","timestamp":"2025-09-23 10:56:12"}
+{"level":"warn","message":"Intento de registro con correo ya existente: testuser@example.com","timestamp":"2025-09-23 10:56:12"}
+{"isOperational":true,"level":"error","message":"ERROR (Development) 💥 El correo ya está registrado","stack":"Error: El correo ya está registrado\n    at register (/home/usuario/Desktop/Sistema de Gestión de Pedidos y Menú de un Restaurante/backend/controllers/authController.js:96:25)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)","status":"fail","statusCode":400,"timestamp":"2025-09-23 10:56:12"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [23/Sep/2025:13:56:12 +0000] \"POST /api/auth/register HTTP/1.1\" 400 396 \"-\" \"node-superagent/3.8.3\"","timestamp":"2025-09-23 10:56:12"}
+{"level":"warn","message":"Intento de registro con campos incompletos.","timestamp":"2025-09-23 10:56:12"}
+{"isOperational":true,"level":"error","message":"ERROR (Development) 💥 Todos los campos son requeridos","stack":"Error: Todos los campos son requeridos\n    at register (/home/usuario/Desktop/Sistema de Gestión de Pedidos y Menú de un Restaurante/backend/controllers/authController.js:89:25)\n    at Layer.handleRequest (/home/usuario/Desktop/Sistema de Gestión de Pedidos y Menú de un Restaurante/backend/node_modules/router/lib/layer.js:152:17)\n    at next (/home/usuario/Desktop/Sistema de Gestión de Pedidos y Menú de un Restaurante/backend/node_modules/router/lib/route.js:157:13)\n    at middleware (/home/usuario/Desktop/Sistema de Gestión de Pedidos y Menú de un Restaurante/backend/node_modules/express-validator/lib/middlewares/check.js:16:13)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)","status":"fail","statusCode":400,"timestamp":"2025-09-23 10:56:12"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [23/Sep/2025:13:56:12 +0000] \"POST /api/auth/register HTTP/1.1\" 400 869 \"-\" \"node-superagent/3.8.3\"","timestamp":"2025-09-23 10:56:12"}
+{"level":"info","message":"Login exitoso para el usuario: testuser@example.com","timestamp":"2025-09-23 10:56:12"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [23/Sep/2025:13:56:12 +0000] \"POST /api/auth/login HTTP/1.1\" 200 345 \"-\" \"node-superagent/3.8.3\"","timestamp":"2025-09-23 10:56:12"}
+{"level":"warn","message":"Intento de login fallido: contraseña inválida para el correo testuser@example.com","timestamp":"2025-09-23 10:56:12"}
+{"isOperational":true,"level":"error","message":"ERROR (Development) 💥 Credenciales inválidas","stack":"Error: Credenciales inválidas\n    at login (/home/usuario/Desktop/Sistema de Gestión de Pedidos y Menú de un Restaurante/backend/controllers/authController.js:206:25)","status":"fail","statusCode":401,"timestamp":"2025-09-23 10:56:12"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [23/Sep/2025:13:56:12 +0000] \"POST /api/auth/login HTTP/1.1\" 401 298 \"-\" \"node-superagent/3.8.3\"","timestamp":"2025-09-23 10:56:12"}
+{"level":"warn","message":"Intento de login con campos incompletos.","timestamp":"2025-09-23 10:56:12"}
+{"isOperational":true,"level":"error","message":"ERROR (Development) 💥 Correo y contraseña son requeridos","stack":"Error: Correo y contraseña son requeridos\n    at login (/home/usuario/Desktop/Sistema de Gestión de Pedidos y Menú de un Restaurante/backend/controllers/authController.js:185:25)\n    at Layer.handleRequest (/home/usuario/Desktop/Sistema de Gestión de Pedidos y Menú de un Restaurante/backend/node_modules/router/lib/layer.js:152:17)\n    at next (/home/usuario/Desktop/Sistema de Gestión de Pedidos y Menú de un Restaurante/backend/node_modules/router/lib/route.js:157:13)\n    at middleware (/home/usuario/Desktop/Sistema de Gestión de Pedidos y Menú de un Restaurante/backend/node_modules/express-validator/lib/middlewares/check.js:16:13)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)","status":"fail","statusCode":400,"timestamp":"2025-09-23 10:56:12"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [23/Sep/2025:13:56:12 +0000] \"POST /api/auth/login HTTP/1.1\" 400 875 \"-\" \"node-superagent/3.8.3\"","timestamp":"2025-09-23 10:56:12"}

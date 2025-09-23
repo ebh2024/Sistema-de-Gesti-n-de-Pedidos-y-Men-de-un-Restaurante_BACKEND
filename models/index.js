@@ -1,71 +1,75 @@
-const sequelize = require('../config/database');
+const { Sequelize, DataTypes } = require('sequelize');
 
-// Import models
-const User = require('./User');
-const Dish = require('./Dish');
-const Table = require('./Table');
-const Order = require('./Order');
-const OrderDetail = require('./OrderDetail');
+const sequelize = process.env.NODE_ENV === 'test'
+    ? require('../config/database.test')
+    : require('../config/database');
+
+const db = {};
+
+db.sequelize = sequelize;
+db.Sequelize = Sequelize;
+
+// Import models and pass the sequelize instance
+db.User = require('./User')(sequelize);
+db.Dish = require('./Dish')(sequelize);
+db.Table = require('./Table')(sequelize);
+db.Order = require('./Order')(sequelize);
+db.OrderDetail = require('./OrderDetail')(sequelize);
 
 // Define associations
-User.hasMany(Order, {
+db.User.hasMany(db.Order, {
     foreignKey: 'id_mesero',
     as: 'orders'
 });
 
-Order.belongsTo(User, {
+db.Order.belongsTo(db.User, {
     foreignKey: 'id_mesero',
     as: 'mesero'
 });
 
-Table.hasMany(Order, {
+db.Table.hasMany(db.Order, {
     foreignKey: 'id_mesa',
     as: 'orders'
 });
 
-Order.belongsTo(Table, {
+db.Order.belongsTo(db.Table, {
     foreignKey: 'id_mesa',
     as: 'mesa'
 });
 
-Order.hasMany(OrderDetail, {
+db.Order.hasMany(db.OrderDetail, {
     foreignKey: 'id_pedido',
     as: 'detalles'
 });
 
-OrderDetail.belongsTo(Order, {
+db.OrderDetail.belongsTo(db.Order, {
     foreignKey: 'id_pedido',
     as: 'pedido'
 });
 
-Dish.hasMany(OrderDetail, {
+db.Dish.hasMany(db.OrderDetail, {
     foreignKey: 'id_plato',
     as: 'orderDetails'
 });
 
-OrderDetail.belongsTo(Dish, {
+db.OrderDetail.belongsTo(db.Dish, {
     foreignKey: 'id_plato',
     as: 'plato'
 });
 
-// Sync database (optional - only for development)
-const syncDatabase = async () => {
+// Sync database
+const syncDatabase = async (force = false) => {
     try {
-        await sequelize.sync({ force: false });
-        console.log('Base de datos sincronizada correctamente.');
+        await db.sequelize.sync({ force: force });
+        console.log(`Base de datos sincronizada correctamente (force: ${force}).`);
     } catch (error) {
         console.error('Error al sincronizar la base de datos:', error);
     }
 };
 
-// Uncomment the line below if you want to sync the database on startup (development only)
-// syncDatabase();
+// Only sync database on startup if not in test environment
+if (process.env.NODE_ENV !== 'test') {
+    syncDatabase();
+}
 
-module.exports = {
-    sequelize,
-    User,
-    Dish,
-    Table,
-    Order,
-    OrderDetail
-};
+module.exports = db;

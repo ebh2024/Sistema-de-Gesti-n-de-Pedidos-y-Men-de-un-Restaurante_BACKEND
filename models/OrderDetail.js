@@ -1,41 +1,42 @@
 const { DataTypes } = require('sequelize');
-const sequelize = require('../config/database');
 
-const OrderDetail = sequelize.define('OrderDetail', {
-    id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true
-    },
-    id_pedido: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-            model: 'orders',
-            key: 'id'
+module.exports = (sequelize) => {
+    const OrderDetail = sequelize.define('OrderDetail', {
+        id: {
+            type: DataTypes.INTEGER,
+            primaryKey: true,
+            autoIncrement: true
+        },
+        id_pedido: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            references: {
+                model: 'orders',
+                key: 'id'
+            }
+        },
+        id_plato: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            references: {
+                model: 'dishes',
+                key: 'id'
+            }
+        },
+        cantidad: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        },
+        precio_unitario: {
+            type: DataTypes.DECIMAL(10, 2),
+            allowNull: false
         }
-    },
-    id_plato: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-            model: 'dishes',
-            key: 'id'
-        }
-    },
-    cantidad: {
-        type: DataTypes.INTEGER,
-        allowNull: false
-    },
-    precio_unitario: {
-        type: DataTypes.DECIMAL(10, 2),
-        allowNull: false
-    }
-}, {
-    tableName: 'order_details',
-    timestamps: true,
-    createdAt: 'created_at',
-    updatedAt: 'updated_at'
-});
+    }, {
+        tableName: 'order_details',
+        timestamps: true,
+        createdAt: 'created_at',
+        updatedAt: 'updated_at'
+    });
 
-module.exports = OrderDetail;
+    return OrderDetail;
+};

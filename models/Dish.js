@@ -1,33 +1,34 @@
 const { DataTypes } = require('sequelize');
-const sequelize = require('../config/database');
 
-const Dish = sequelize.define('Dish', {
-    id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true
-    },
-    nombre: {
-        type: DataTypes.STRING(255),
-        allowNull: false
-    },
-    descripcion: {
-        type: DataTypes.TEXT,
-        allowNull: true
-    },
-    precio: {
-        type: DataTypes.DECIMAL(10, 2),
-        allowNull: false
-    },
-    disponibilidad: {
-        type: DataTypes.TINYINT(1),
-        defaultValue: 1
-    }
-}, {
-    tableName: 'dishes',
-    timestamps: true,
-    createdAt: 'created_at',
-    updatedAt: 'updated_at'
-});
+module.exports = (sequelize) => {
+    const Dish = sequelize.define('Dish', {
+        id: {
+            type: DataTypes.INTEGER,
+            primaryKey: true,
+            autoIncrement: true
+        },
+        nombre: {
+            type: DataTypes.STRING(255),
+            allowNull: false
+        },
+        descripcion: {
+            type: DataTypes.TEXT,
+            allowNull: true
+        },
+        precio: {
+            type: DataTypes.DECIMAL(10, 2),
+            allowNull: false
+        },
+        disponibilidad: {
+            type: DataTypes.TINYINT(1),
+            defaultValue: 1
+        }
+    }, {
+        tableName: 'dishes',
+        timestamps: true,
+        createdAt: 'created_at',
+        updatedAt: 'updated_at'
+    });
 
-module.exports = Dish;
+    return Dish;
+};

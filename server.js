@@ -2,14 +2,25 @@ const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
-require('dotenv').config();
+require('dotenv').config(); // Load default .env first
 
-// Importar modelos y establecer asociaciones de la base de datos
-require('./models');
+// Ensure NODE_ENV is set, default to 'development'
+process.env.NODE_ENV = process.env.NODE_ENV || 'development';
+
+// If in test environment, load .env.test and override
+if (process.env.NODE_ENV === 'test') {
+    require('dotenv').config({ path: '.env.test', override: true });
+}
 
 // Inicializar la aplicación Express
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Importar modelos y establecer asociaciones de la base de datos
+// Solo importar y sincronizar modelos si no estamos en el entorno de prueba
+if (process.env.NODE_ENV !== 'test') {
+    require('./models');
+}
 
 // Importar el logger para el registro de eventos
 const logger = require('./utils/logger');
@@ -27,7 +38,9 @@ const limiter = rateLimit({
     max: 100, // Límite de 100 solicitudes por IP dentro de la ventana de tiempo
     message: 'Demasiadas solicitudes desde esta IP, por favor intente de nuevo después de 15 minutos'
 });
-app.use(limiter); // Aplicar el rate limiting a todas las solicitudes
+if (process.env.NODE_ENV !== 'test') {
+    app.use(limiter); // Aplicar el rate limiting a todas las solicitudes
+}
 
 /**
  * Configuración de CORS (Cross-Origin Resource Sharing).
@@ -113,9 +126,11 @@ app.use(globalErrorHandler);
  * Iniciar el servidor Express.
  * Escucha en el puerto definido y registra un mensaje en la consola.
  */
-app.listen(PORT, () => {
-    logger.info(`Servidor corriendo en el puerto ${PORT}`);
-    logger.info(`API Health check disponible en: http://localhost:${PORT}/api/health`);
-});
+if (process.env.NODE_ENV !== 'test') {
+    app.listen(PORT, () => {
+        logger.info(`Servidor corriendo en el puerto ${PORT}`);
+        logger.info(`API Health check disponible en: http://localhost:${PORT}/api/health`);
+    });
+}
 
 module.exports = app;

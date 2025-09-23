@@ -64,7 +64,11 @@ const authLimiter = rateLimit({
  *       429:
  *         description: Demasiados intentos de registro
  */
-router.post('/register', authLimiter, registerValidation, authController.register);
+if (process.env.NODE_ENV !== 'test') {
+    router.post('/register', authLimiter, registerValidation, authController.register);
+} else {
+    router.post('/register', registerValidation, authController.register);
+}
 
 /**
  * @swagger
@@ -106,7 +110,11 @@ router.post('/register', authLimiter, registerValidation, authController.registe
  *       429:
  *         description: Demasiados intentos de inicio de sesión
  */
-router.post('/login', authLimiter, loginValidation, authController.login);
+if (process.env.NODE_ENV !== 'test') {
+    router.post('/login', authLimiter, loginValidation, authController.login);
+} else {
+    router.post('/login', loginValidation, authController.login);
+}
 
 /**
  * @swagger
@@ -135,7 +143,11 @@ router.post('/login', authLimiter, loginValidation, authController.login);
  *       429:
  *         description: Demasiadas solicitudes de restablecimiento de contraseña
  */
-router.post('/forgot-password', authLimiter, authController.forgotPassword);
+if (process.env.NODE_ENV !== 'test') {
+    router.post('/forgot-password', authLimiter, authController.forgotPassword);
+} else {
+    router.post('/forgot-password', authController.forgotPassword);
+}
 
 /**
  * @swagger
@@ -168,6 +180,10 @@ router.post('/forgot-password', authLimiter, authController.forgotPassword);
  *       429:
  *         description: Demasiadas solicitudes de restablecimiento de contraseña
  */
-router.post('/reset-password', authLimiter, authController.resetPassword);
+if (process.env.NODE_ENV !== 'test') {
+    router.post('/reset-password', authLimiter, authController.resetPassword);
+} else {
+    router.post('/reset-password', authController.resetPassword);
+}
 
 module.exports = router;
