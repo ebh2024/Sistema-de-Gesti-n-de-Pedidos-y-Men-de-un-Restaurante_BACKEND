@@ -3,24 +3,171 @@ const router = express.Router();
 const authController = require('../controllers/authController');
 const { registerValidation, loginValidation } = require('../middlewares/validation/authValidation');
 const rateLimit = require('express-rate-limit');
-const logger = require('../utils/logger'); // Importar el logger
-const AppError = require('../utils/AppError'); // Importar AppError
+const logger = require('../utils/logger');
+const AppError = require('../utils/AppError');
 
-// Rate limiting para rutas de autenticación
+/**
+ * Configuración de rate limiting para rutas de autenticación.
+ * Limita el número de intentos de autenticación para prevenir ataques de fuerza bruta.
+ */
 const authLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 5, // 5 requests per 15 minutes
-    message: 'Too many authentication attempts from this IP, please try again after 15 minutes',
+    windowMs: 15 * 60 * 1000, // 15 minutos
+    max: 5, // Máximo 5 solicitudes por IP dentro de la ventana de tiempo
+    message: 'Demasiados intentos de autenticación desde esta IP, por favor intente de nuevo después de 15 minutos',
     handler: (req, res, next) => {
-        logger.warn(`Rate limit exceeded for auth route from IP: ${req.ip}`);
-        next(new AppError('Too many authentication attempts, please try again after 15 minutes', 429));
+        logger.warn(`Rate limit excedido para ruta de autenticación desde IP: ${req.ip}`);
+        next(new AppError('Demasiados intentos de autenticación, por favor intente de nuevo después de 15 minutos', 429));
     }
 });
 
-// Rutas públicas
+/**
+ * @swagger
+ * tags:
+ *   name: Auth
+ *   description: Gestión de autenticación de usuarios
+ */
+
+// Rutas de autenticación
+/**
+ * @swagger
+ * /api/auth/register:
+ *   post:
+ *     summary: Registra un nuevo usuario
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - username
+ *               - email
+ *               - password
+ *             properties:
+ *               username:
+ *                 type: string
+ *                 description: Nombre de usuario único
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: Correo electrónico del usuario
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 description: Contraseña del usuario (mínimo 6 caracteres)
+ *     responses:
+ *       201:
+ *         description: Usuario registrado exitosamente
+ *       400:
+ *         description: Datos de entrada inválidos o usuario ya existe
+ *       429:
+ *         description: Demasiados intentos de registro
+ */
 router.post('/register', authLimiter, registerValidation, authController.register);
+
+/**
+ * @swagger
+ * /api/auth/login:
+ *   post:
+ *     summary: Inicia sesión de un usuario
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: Correo electrónico del usuario
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 description: Contraseña del usuario
+ *     responses:
+ *       200:
+ *         description: Inicio de sesión exitoso, devuelve un token JWT
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 token:
+ *                   type: string
+ *                   description: Token de autenticación JWT
+ *       400:
+ *         description: Credenciales inválidas
+ *       429:
+ *         description: Demasiados intentos de inicio de sesión
+ */
 router.post('/login', authLimiter, loginValidation, authController.login);
+
+/**
+ * @swagger
+ * /api/auth/forgot-password:
+ *   post:
+ *     summary: Solicita un restablecimiento de contraseña
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: Correo electrónico del usuario para restablecer la contraseña
+ *     responses:
+ *       200:
+ *         description: Si el correo existe, se envía un enlace de restablecimiento
+ *       400:
+ *         description: Correo electrónico no proporcionado
+ *       429:
+ *         description: Demasiadas solicitudes de restablecimiento de contraseña
+ */
 router.post('/forgot-password', authLimiter, authController.forgotPassword);
+
+/**
+ * @swagger
+ * /api/auth/reset-password:
+ *   post:
+ *     summary: Restablece la contraseña del usuario
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - token
+ *               - newPassword
+ *             properties:
+ *               token:
+ *                 type: string
+ *                 description: Token de restablecimiento de contraseña recibido por correo
+ *               newPassword:
+ *                 type: string
+ *                 format: password
+ *                 description: Nueva contraseña (mínimo 6 caracteres)
+ *     responses:
+ *       200:
+ *         description: Contraseña restablecida exitosamente
+ *       400:
+ *         description: Token inválido o expirado, o nueva contraseña no válida
+ *       429:
+ *         description: Demasiadas solicitudes de restablecimiento de contraseña
+ */
 router.post('/reset-password', authLimiter, authController.resetPassword);
 
 module.exports = router;
