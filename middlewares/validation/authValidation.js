@@ -28,13 +28,13 @@ exports.registerValidation = [
 ];
 
 exports.loginValidation = [
-  body('email')
+  body('correo')
     .trim()
     .notEmpty()
     .withMessage('El correo electrónico es requerido.')
     .isEmail()
     .withMessage('Debe ser un correo electrónico válido.'),
-  body('password')
+  body('contraseña')
     .trim()
     .notEmpty()
     .withMessage('La contraseña es requerida.'),

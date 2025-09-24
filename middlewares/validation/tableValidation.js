@@ -1,47 +1,42 @@
 const { body, param } = require('express-validator');
 
 exports.createTableValidation = [
-  body('number')
+  body('numero')
     .notEmpty()
     .withMessage('El número de mesa es requerido.')
     .isInt({ gt: 0 })
     .withMessage('El número de mesa debe ser un entero positivo.'),
-  body('capacity')
+  body('capacidad')
     .notEmpty()
     .withMessage('La capacidad de la mesa es requerida.')
     .isInt({ gt: 0 })
     .withMessage('La capacidad debe ser un entero positivo.'),
-  body('status')
-    .trim()
-    .notEmpty()
-    .withMessage('El estado de la mesa es requerido.')
-    .isIn(['available', 'occupied', 'reserved'])
-    .withMessage('El estado debe ser "available", "occupied" o "reserved".'),
+  body('disponible')
+    .optional()
+    .isBoolean()
+    .withMessage('El estado de disponibilidad debe ser un booleano.'),
 ];
 
 exports.updateTableValidation = [
   param('id')
-    .isUUID()
+    .isInt({ gt: 0 })
     .withMessage('ID de mesa inválido.'),
-  body('number')
+  body('numero')
     .optional()
     .isInt({ gt: 0 })
     .withMessage('El número de mesa debe ser un entero positivo si se proporciona.'),
-  body('capacity')
+  body('capacidad')
     .optional()
     .isInt({ gt: 0 })
     .withMessage('La capacidad debe ser un entero positivo si se proporciona.'),
-  body('status')
+  body('disponible')
     .optional()
-    .trim()
-    .notEmpty()
-    .withMessage('El estado de la mesa no puede estar vacío si se proporciona.')
-    .isIn(['available', 'occupied', 'reserved'])
-    .withMessage('El estado debe ser "available", "occupied" o "reserved".'),
+    .isBoolean()
+    .withMessage('El estado de disponibilidad debe ser un booleano si se proporciona.'),
 ];
 
 exports.tableIdValidation = [
   param('id')
-    .isUUID()
+    .isInt({ gt: 0 })
     .withMessage('ID de mesa inválido.'),
 ];
