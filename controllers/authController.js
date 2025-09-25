@@ -77,8 +77,7 @@ const transporter = nodemailer.createTransport({
  */
 const register = async (req, res, next) => {
     try {
-        const { nombre, correo, contraseña } = req.body;
-        const rol = 'customer'; // Asignar rol por defecto 'customer'
+        const { nombre, correo, contraseña, rol } = req.body;
 
         // Validar que todos los campos requeridos estén presentes
         if (!nombre || !correo || !contraseña) {

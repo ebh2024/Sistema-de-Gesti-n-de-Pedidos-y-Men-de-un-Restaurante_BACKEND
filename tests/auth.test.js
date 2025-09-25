@@ -111,7 +111,7 @@ describe('Auth API', () => {
                 .send({
                     nombre: 'incomplete',
                     correo: 'incomplete@example.com',
-                    rol: 'cliente'
+                    rol: 'mesero'
                     // Missing contraseña
                 })
                 .end((err, res) => {
