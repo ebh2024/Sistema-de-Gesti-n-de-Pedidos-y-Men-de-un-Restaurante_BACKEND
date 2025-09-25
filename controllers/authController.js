@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
+const { validationResult } = require('express-validator');
 const { User } = require('../models');
 const AppError = require('../utils/AppError');
 const logger = require('../utils/logger');
@@ -77,13 +78,13 @@ const transporter = nodemailer.createTransport({
  */
 const register = async (req, res, next) => {
     try {
-        const { nombre, correo, contraseña, rol } = req.body;
-
-        // Validar que todos los campos requeridos estén presentes
-        if (!nombre || !correo || !contraseña) {
-            logger.warn('Intento de registro con campos incompletos.');
-            return next(new AppError('Todos los campos son requeridos', 400));
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            logger.warn('Errores de validación en registro:', errors.array());
+            return next(new AppError('Datos de entrada inválidos', 400));
         }
+
+        const { nombre, correo, contraseña, rol } = req.body;
 
         // Verificar si ya existe un usuario con el correo proporcionado
         const existingUser = await User.findOne({ where: { correo } });

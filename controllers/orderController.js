@@ -243,6 +243,10 @@ const getOrderById = async (req, res, next) => {
  *                     cantidad:
  *                       type: integer
  *                       description: Cantidad del plato.
+ *               estado:
+ *                 type: string
+ *                 enum: [borrador, pendiente, en preparación, servido]
+ *                 description: Estado del pedido (opcional, por defecto 'pendiente').
  *     responses:
  *       201:
  *         description: Pedido creado exitosamente.
@@ -272,7 +276,7 @@ const createOrder = async (req, res, next) => {
     const transaction = await sequelize.transaction();
 
     try {
-        const { id_mesa, detalles } = req.body;
+        const { id_mesa, detalles, estado = 'pendiente' } = req.body;
 
         // Validar que la mesa y los detalles del pedido estén presentes
         if (!id_mesa || !detalles || detalles.length === 0) {
@@ -280,14 +284,21 @@ const createOrder = async (req, res, next) => {
             return next(new AppError('Mesa y detalles del pedido son requeridos', 400));
         }
 
-        // Verificar que la mesa existe y está disponible
+        // Validar estado
+        if (!['borrador', 'pendiente', 'en preparación', 'servido'].includes(estado)) {
+            logger.warn(`Estado inválido: ${estado}`);
+            return next(new AppError('Estado inválido', 400));
+        }
+
+        // Verificar que la mesa existe
         const table = await Table.findByPk(id_mesa, { transaction });
         if (!table) {
             logger.warn(`Intento de crear pedido para mesa no encontrada: ${id_mesa}`);
             return next(new AppError('Mesa no encontrada', 404));
         }
 
-        if (!table.disponible) {
+        // Solo verificar disponibilidad si no es borrador
+        if (estado !== 'borrador' && !table.disponible) {
             logger.warn(`Intento de crear pedido para mesa no disponible: ${id_mesa}`);
             return next(new AppError('La mesa no está disponible', 400));
         }
@@ -322,6 +333,7 @@ const createOrder = async (req, res, next) => {
         const order = await Order.create({
             id_mesa,
             id_mesero: req.user.id, // Asignar el pedido al mesero autenticado
+            estado,
             total
         }, { transaction });
 
@@ -333,14 +345,16 @@ const createOrder = async (req, res, next) => {
             }, { transaction });
         }
 
-        // Marcar la mesa como no disponible
-        await Table.update(
-            { disponible: false }, // Asumiendo que 'disponible' es un booleano
-            { where: { id: id_mesa }, transaction }
-        );
+        // Marcar la mesa como no disponible solo si no es borrador
+        if (estado !== 'borrador') {
+            await Table.update(
+                { disponible: false }, // Asumiendo que 'disponible' es un booleano
+                { where: { id: id_mesa }, transaction }
+            );
+        }
 
         await transaction.commit(); // Confirmar la transacción
-        logger.info(`Pedido creado exitosamente con ID: ${order.id} por el mesero ${req.user.id}. Total: ${total}`);
+        logger.info(`Pedido creado exitosamente con ID: ${order.id} por el mesero ${req.user.id}. Estado: ${estado}. Total: ${total}`);
         res.status(201).json({
             message: 'Pedido creado exitosamente',
             orderId: order.id,
@@ -349,6 +363,134 @@ const createOrder = async (req, res, next) => {
     } catch (error) {
         await transaction.rollback(); // Revertir la transacción en caso de error
         logger.error(`Error al crear pedido: ${error.message}`, { stack: error.stack });
+        next(error);
+    }
+};
+
+/**
+ * @swagger
+ * /api/orders/{id}:
+ *   put:
+ *     summary: Actualiza un pedido existente (solo para borradores).
+ *     description: Permite actualizar los detalles de un pedido que esté en estado 'borrador'.
+ *     tags: [Orders]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: ID del pedido a actualizar.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - detalles
+ *             properties:
+ *               detalles:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   required:
+ *                     - id_plato
+ *                     - cantidad
+ *                   properties:
+ *                     id_plato:
+ *                       type: integer
+ *                       description: ID del plato.
+ *                     cantidad:
+ *                       type: integer
+ *                       description: Cantidad del plato.
+ *     responses:
+ *       200:
+ *         description: Pedido actualizado exitosamente.
+ *       400:
+ *         description: Datos inválidos o pedido no es borrador.
+ *       404:
+ *         description: Pedido no encontrado o no autorizado.
+ *       500:
+ *         description: Error interno del servidor.
+ */
+const updateOrder = async (req, res, next) => {
+    const transaction = await sequelize.transaction();
+
+    try {
+        const { id } = req.params;
+        const { detalles } = req.body;
+
+        // Validar detalles
+        if (!detalles || detalles.length === 0) {
+            logger.warn('Intento de actualizar pedido con detalles vacíos.');
+            return next(new AppError('Detalles del pedido son requeridos', 400));
+        }
+
+        // Condición para asegurar que un mesero solo pueda actualizar sus propios pedidos
+        const whereCondition = req.user.rol === 'mesero'
+            ? { id, id_mesero: req.user.id, estado: 'borrador' }
+            : { id, estado: 'borrador' };
+
+        const order = await Order.findOne({ where: whereCondition, transaction });
+
+        if (!order) {
+            logger.warn(`Intento de actualizar pedido no encontrado, no autorizado o no es borrador: ${id}`);
+            return next(new AppError('Pedido no encontrado o no se puede editar', 404));
+        }
+
+        let total = 0;
+        const orderDetailsToCreate = [];
+
+        // Iterar sobre los detalles del pedido para calcular el total y verificar la disponibilidad de los platos
+        for (const detalle of detalles) {
+            const dish = await Dish.findOne({
+                where: {
+                    id: detalle.id_plato,
+                    disponibilidad: true
+                },
+                transaction
+            });
+
+            if (!dish) {
+                logger.warn(`Plato ${detalle.id_plato} no encontrado o no disponible durante la actualización del pedido.`);
+                return next(new AppError(`Plato ${detalle.id_plato} no encontrado o no disponible`, 400));
+            }
+
+            total += dish.precio * detalle.cantidad;
+            orderDetailsToCreate.push({
+                id_pedido: order.id,
+                id_plato: detalle.id_plato,
+                cantidad: detalle.cantidad,
+                precio_unitario: dish.precio
+            });
+        }
+
+        // Eliminar detalles antiguos
+        await OrderDetail.destroy({
+            where: { id_pedido: id },
+            transaction
+        });
+
+        // Crear nuevos detalles
+        for (const detalle of orderDetailsToCreate) {
+            await OrderDetail.create(detalle, { transaction });
+        }
+
+        // Actualizar total del pedido
+        await Order.update(
+            { total },
+            { where: { id }, transaction }
+        );
+
+        await transaction.commit();
+        logger.info(`Pedido ${id} actualizado exitosamente. Nuevo total: ${total}`);
+        res.json({ message: 'Pedido actualizado exitosamente', total });
+    } catch (error) {
+        await transaction.rollback();
+        logger.error(`Error al actualizar pedido ${req.params.id}: ${error.message}`, { stack: error.stack });
         next(error);
     }
 };
@@ -380,7 +522,7 @@ const createOrder = async (req, res, next) => {
  *             properties:
  *               estado:
  *                 type: string
- *                 enum: [pendiente, en preparación, servido]
+ *                 enum: [borrador, pendiente, en preparación, servido]
  *                 description: Nuevo estado del pedido.
  *     responses:
  *       200:
@@ -398,7 +540,7 @@ const updateOrderStatus = async (req, res, next) => {
         const { estado } = req.body;
 
         // Validar que el estado proporcionado sea uno de los valores permitidos
-        if (!['pendiente', 'en preparación', 'servido'].includes(estado)) {
+        if (!['borrador', 'pendiente', 'en preparación', 'servido'].includes(estado)) {
             logger.warn(`Intento de actualizar pedido ${id} con estado inválido: ${estado}`);
             return next(new AppError('Estado inválido', 400));
         }
@@ -415,6 +557,16 @@ const updateOrderStatus = async (req, res, next) => {
             return next(new AppError('Pedido no encontrado', 404));
         }
 
+        // Si cambiando de borrador a pendiente, marcar mesa no disponible
+        if (order.estado === 'borrador' && estado === 'pendiente') {
+            const table = await Table.findByPk(order.id_mesa);
+            if (!table.disponible) {
+                logger.warn(`Intento de enviar pedido para mesa no disponible: ${order.id_mesa}`);
+                return next(new AppError('La mesa no está disponible', 400));
+            }
+            await Table.update({ disponible: false }, { where: { id: order.id_mesa } });
+        }
+
         // Actualizar el estado del pedido
         await Order.update(
             { estado },
@@ -424,7 +576,7 @@ const updateOrderStatus = async (req, res, next) => {
         // Si el pedido se marca como 'servido', liberar la mesa asociada
         if (estado === 'servido') {
             await Table.update(
-                { disponible: true }, // Asumiendo que 'disponible' es un booleano
+                { disponible: true },
                 { where: { id: order.id_mesa } }
             );
             logger.info(`Mesa ${order.id_mesa} liberada tras servir el pedido ${id}.`);
@@ -518,6 +670,7 @@ module.exports = {
     getAllOrders,
     getOrderById,
     createOrder,
+    updateOrder,
     updateOrderStatus,
     deleteOrder
 };

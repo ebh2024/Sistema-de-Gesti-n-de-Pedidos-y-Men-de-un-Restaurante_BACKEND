@@ -24,7 +24,7 @@ module.exports = (sequelize) => {
             }
         },
         estado: {
-            type: DataTypes.ENUM('pendiente', 'en preparación', 'servido'),
+            type: DataTypes.ENUM('borrador', 'pendiente', 'en preparación', 'servido'),
             defaultValue: 'pendiente'
         },
         total: {

@@ -14,6 +14,7 @@ router.get('/:id', orderIdValidation, handleValidationErrors, orderController.ge
 
 // Rutas para meseros y admin
 router.post('/', authorizeRoles('mesero', 'admin'), createOrderValidation, handleValidationErrors, orderController.createOrder);
+router.put('/:id', authorizeRoles('mesero', 'admin'), createOrderValidation, handleValidationErrors, orderController.updateOrder); // For updating drafts
 router.put('/:id/status', authorizeRoles('mesero', 'admin', 'cocinero'), updateOrderValidation, handleValidationErrors, orderController.updateOrderStatus);
 
 // Rutas solo para admin
