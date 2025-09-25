@@ -48,10 +48,6 @@ const transporter = nodemailer.createTransport({
  *                 type: string
  *                 format: password
  *                 description: Contraseña del usuario (se almacenará hasheada).
- *               rol:
- *                 type: string
- *                 enum: [admin, employee, customer]
- *                 description: Rol del usuario en el sistema.
  *     responses:
  *       201:
  *         description: Usuario registrado exitosamente.
@@ -81,10 +77,11 @@ const transporter = nodemailer.createTransport({
  */
 const register = async (req, res, next) => {
     try {
-        const { nombre, correo, contraseña, rol } = req.body;
+        const { nombre, correo, contraseña } = req.body;
+        const rol = 'customer'; // Asignar rol por defecto 'customer'
 
         // Validar que todos los campos requeridos estén presentes
-        if (!nombre || !correo || !contraseña || !rol) {
+        if (!nombre || !correo || !contraseña) {
             logger.warn('Intento de registro con campos incompletos.');
             return next(new AppError('Todos los campos son requeridos', 400));
         }
@@ -107,7 +104,7 @@ const register = async (req, res, next) => {
             rol
         });
 
-        logger.info(`Usuario registrado exitosamente: ${user.correo} con ID: ${user.id}`);
+        logger.info(`Usuario registrado exitosamente: ${user.correo} con ID: ${user.id} y rol: ${user.rol}`);
         res.status(201).json({
             message: 'Usuario registrado exitosamente',
             userId: user.id
