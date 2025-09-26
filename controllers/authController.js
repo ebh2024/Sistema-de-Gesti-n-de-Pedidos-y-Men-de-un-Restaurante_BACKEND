@@ -50,8 +50,8 @@ const transporter = nodemailer.createTransport({
  *                 description: Contraseña del usuario (se almacenará hasheada).
  *               rol:
  *                 type: string
- *                 description: Rol del usuario (por defecto 'cliente').
- *                 default: cliente
+ *                 description: Rol del usuario (por defecto 'mesero').
+ *                 default: mesero
  *     responses:
  *       201:
  *         description: Usuario registrado exitosamente.
@@ -88,7 +88,7 @@ const register = async (req, res, next) => {
         }
 
         const { nombre, correo, contraseña } = req.body;
-        const rol = 'cliente'; // Default role for new registrations
+        const rol = 'mesero'; // Default role for new registrations
 
         // Validar que nombre esté presente
         if (!nombre) {

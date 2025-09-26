@@ -78,12 +78,14 @@ const authRoutes = require('./routes/auth');
 const dishRoutes = require('./routes/dishes');
 const tableRoutes = require('./routes/tables');
 const orderRoutes = require('./routes/orders');
+const userRoutes = require('./routes/users');
 
 // Definir las rutas base para cada módulo de la API
 app.use('/api/auth', authRoutes);
 app.use('/api/dishes', dishRoutes);
 app.use('/api/tables', tableRoutes);
 app.use('/api/orders', orderRoutes);
+app.use('/api/users', userRoutes);
 
 /**
  * @swagger
