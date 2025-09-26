@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const orderController = require('../controllers/orderController');
 const { authenticateToken, authorizeRoles } = require('../middlewares/auth');
-const { createOrderValidation, updateOrderValidation, orderIdValidation } = require('../middlewares/validation/orderValidation');
+const { createOrderValidation, updateOrderValidation, orderIdValidation, updateOrderStatusValidation } = require('../middlewares/validation/orderValidation');
 const { handleValidationErrors } = require('../middlewares/errorHandler');
 
 // Todas las rutas requieren autenticación
@@ -14,8 +14,8 @@ router.get('/:id', orderIdValidation, handleValidationErrors, orderController.ge
 
 // Rutas para meseros y admin
 router.post('/', authorizeRoles('mesero', 'admin'), createOrderValidation, handleValidationErrors, orderController.createOrder);
-router.put('/:id', authorizeRoles('mesero', 'admin'), createOrderValidation, handleValidationErrors, orderController.updateOrder); // For updating drafts
-router.put('/:id/status', authorizeRoles('mesero', 'admin', 'cocinero'), updateOrderValidation, handleValidationErrors, orderController.updateOrderStatus);
+router.put('/:id', authorizeRoles('mesero', 'admin'), updateOrderValidation, handleValidationErrors, orderController.updateOrder); // For updating drafts
+router.put('/:id/status', authorizeRoles('mesero', 'admin', 'cocinero'), updateOrderStatusValidation, handleValidationErrors, orderController.updateOrderStatus);
 
 // Rutas solo para admin
 router.delete('/:id', authorizeRoles('admin'), orderIdValidation, handleValidationErrors, orderController.deleteOrder);

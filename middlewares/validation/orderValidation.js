@@ -1,81 +1,68 @@
 const { body, param } = require('express-validator');
 
 exports.createOrderValidation = [
-  body('tableId')
+  body('id_mesa')
     .notEmpty()
     .withMessage('El ID de la mesa es requerido.')
-    .isUUID()
+    .isInt({ gt: 0 })
     .withMessage('ID de mesa inválido.'),
-  body('userId')
-    .notEmpty()
-    .withMessage('El ID del usuario es requerido.')
-    .isUUID()
-    .withMessage('ID de usuario inválido.'),
-  body('status')
-    .trim()
-    .notEmpty()
-    .withMessage('El estado del pedido es requerido.')
-    .isIn(['pending', 'preparing', 'ready', 'delivered', 'cancelled'])
-    .withMessage('El estado debe ser "pending", "preparing", "ready", "delivered" o "cancelled".'),
-  body('orderDetails')
+  body('detalles')
     .isArray({ min: 1 })
     .withMessage('Los detalles del pedido son requeridos y deben ser un array no vacío.'),
-  body('orderDetails.*.dishId')
+  body('detalles.*.id_plato')
     .notEmpty()
     .withMessage('El ID del plato es requerido en los detalles del pedido.')
-    .isUUID()
+    .isInt({ gt: 0 })
     .withMessage('ID de plato inválido en los detalles del pedido.'),
-  body('orderDetails.*.quantity')
+  body('detalles.*.cantidad')
     .notEmpty()
     .withMessage('La cantidad es requerida en los detalles del pedido.')
     .isInt({ gt: 0 })
     .withMessage('La cantidad debe ser un entero positivo en los detalles del pedido.'),
-  body('orderDetails.*.price')
-    .notEmpty()
-    .withMessage('El precio es requerido en los detalles del pedido.')
-    .isFloat({ gt: 0 })
-    .withMessage('El precio debe ser un número positivo en los detalles del pedido.'),
+  body('estado')
+    .optional()
+    .trim()
+    .isIn(['borrador', 'pendiente', 'en preparación', 'servido'])
+    .withMessage('El estado debe ser "borrador", "pendiente", "en preparación" o "servido".'),
 ];
 
 exports.updateOrderValidation = [
   param('id')
-    .isUUID()
+    .isInt({ gt: 0 })
     .withMessage('ID de pedido inválido.'),
-  body('tableId')
-    .optional()
-    .isUUID()
-    .withMessage('ID de mesa inválido si se proporciona.'),
-  body('userId')
-    .optional()
-    .isUUID()
-    .withMessage('ID de usuario inválido si se proporciona.'),
-  body('status')
-    .optional()
-    .trim()
-    .notEmpty()
-    .withMessage('El estado del pedido no puede estar vacío si se proporciona.')
-    .isIn(['pending', 'preparing', 'ready', 'delivered', 'cancelled'])
-    .withMessage('El estado debe ser "pending", "preparing", "ready", "delivered" o "cancelled" si se proporciona.'),
-  body('orderDetails')
+  body('detalles')
     .optional()
     .isArray({ min: 1 })
     .withMessage('Los detalles del pedido deben ser un array no vacío si se proporcionan.'),
-  body('orderDetails.*.dishId')
+  body('detalles.*.id_plato')
     .optional()
-    .isUUID()
+    .isInt({ gt: 0 })
     .withMessage('ID de plato inválido en los detalles del pedido si se proporciona.'),
-  body('orderDetails.*.quantity')
+  body('detalles.*.cantidad')
     .optional()
     .isInt({ gt: 0 })
     .withMessage('La cantidad debe ser un entero positivo en los detalles del pedido si se proporciona.'),
-  body('orderDetails.*.price')
+  body('estado')
     .optional()
-    .isFloat({ gt: 0 })
-    .withMessage('El precio debe ser un número positivo en los detalles del pedido si se proporciona.'),
+    .trim()
+    .isIn(['borrador', 'pendiente', 'en preparación', 'servido'])
+    .withMessage('El estado debe ser "borrador", "pendiente", "en preparación" o "servido" si se proporciona.'),
 ];
 
 exports.orderIdValidation = [
   param('id')
-    .isUUID()
+    .isInt({ gt: 0 })
     .withMessage('ID de pedido inválido.'),
+];
+
+exports.updateOrderStatusValidation = [
+  param('id')
+    .isInt({ gt: 0 })
+    .withMessage('ID de pedido inválido.'),
+  body('estado')
+    .notEmpty()
+    .withMessage('El estado del pedido es requerido.')
+    .trim()
+    .isIn(['borrador', 'pendiente', 'en preparación', 'servido'])
+    .withMessage('El estado debe ser "borrador", "pendiente", "en preparación" o "servido".'),
 ];

@@ -1,5 +1,4 @@
 const { Order, OrderDetail, Table, User, Dish, sequelize } = require('../models');
-const { Op } = require('sequelize');
 const AppError = require('../utils/AppError');
 const logger = require('../utils/logger');
 
@@ -298,7 +297,7 @@ const createOrder = async (req, res, next) => {
         }
 
         // Solo verificar disponibilidad si no es borrador
-        if (estado !== 'borrador' && !table.disponible) {
+        if (estado !== 'borrador' && table.estado !== 'available') {
             logger.warn(`Intento de crear pedido para mesa no disponible: ${id_mesa}`);
             return next(new AppError('La mesa no está disponible', 400));
         }
@@ -348,7 +347,7 @@ const createOrder = async (req, res, next) => {
         // Marcar la mesa como no disponible solo si no es borrador
         if (estado !== 'borrador') {
             await Table.update(
-                { disponible: false }, // Asumiendo que 'disponible' es un booleano
+                { estado: 'occupied' },
                 { where: { id: id_mesa }, transaction }
             );
         }
@@ -361,8 +360,8 @@ const createOrder = async (req, res, next) => {
             total: total
         });
     } catch (error) {
-        await transaction.rollback(); // Revertir la transacción en caso de error
-        logger.error(`Error al crear pedido: ${error.message}`, { stack: error.stack });
+        await transaction.rollback();
+        logger.error(`Error al eliminar pedido con ID ${req.params.id}: ${error.message}`, { stack: error.stack });
         next(error);
     }
 };
@@ -490,7 +489,7 @@ const updateOrder = async (req, res, next) => {
         res.json({ message: 'Pedido actualizado exitosamente', total });
     } catch (error) {
         await transaction.rollback();
-        logger.error(`Error al actualizar pedido ${req.params.id}: ${error.message}`, { stack: error.stack });
+        logger.error(`Error al actualizar pedido ${id}: ${error.message}`, { stack: error.stack });
         next(error);
     }
 };
@@ -560,11 +559,11 @@ const updateOrderStatus = async (req, res, next) => {
         // Si cambiando de borrador a pendiente, marcar mesa no disponible
         if (order.estado === 'borrador' && estado === 'pendiente') {
             const table = await Table.findByPk(order.id_mesa);
-            if (!table.disponible) {
+            if (table.estado !== 'available') {
                 logger.warn(`Intento de enviar pedido para mesa no disponible: ${order.id_mesa}`);
                 return next(new AppError('La mesa no está disponible', 400));
             }
-            await Table.update({ disponible: false }, { where: { id: order.id_mesa } });
+            await Table.update({ estado: 'occupied' }, { where: { id: order.id_mesa } });
         }
 
         // Actualizar el estado del pedido
@@ -576,7 +575,7 @@ const updateOrderStatus = async (req, res, next) => {
         // Si el pedido se marca como 'servido', liberar la mesa asociada
         if (estado === 'servido') {
             await Table.update(
-                { disponible: true },
+                { estado: 'available' },
                 { where: { id: order.id_mesa } }
             );
             logger.info(`Mesa ${order.id_mesa} liberada tras servir el pedido ${id}.`);
@@ -585,7 +584,7 @@ const updateOrderStatus = async (req, res, next) => {
         logger.info(`Estado del pedido con ID: ${id} actualizado a '${estado}' exitosamente.`);
         res.json({ message: 'Estado del pedido actualizado exitosamente' });
     } catch (error) {
-        logger.error(`Error al actualizar estado del pedido con ID ${id}: ${error.message}`, { stack: error.stack });
+        logger.error(`Error al actualizar estado del pedido con ID ${req.params.id}: ${error.message}`, { stack: error.stack });
         next(error);
     }
 };
@@ -645,7 +644,7 @@ const deleteOrder = async (req, res, next) => {
 
         // Liberar la mesa asociada al pedido
         await Table.update(
-            { disponible: true }, // Asumiendo que 'disponible' es un booleano
+            { estado: 'available' },
             { where: { id: order.id_mesa }, transaction }
         );
         logger.info(`Mesa ${order.id_mesa} liberada tras eliminar el pedido ${id}.`);
