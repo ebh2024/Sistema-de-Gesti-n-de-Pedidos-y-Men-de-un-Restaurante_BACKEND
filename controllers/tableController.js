@@ -129,7 +129,7 @@ const getTableById = async (req, res, next) => {
  */
 const createTable = async (req, res, next) => {
     try {
-        const { numero, capacidad, disponible } = req.body;
+        const { numero, capacidad, estado } = req.body;
 
         // Validar que número y capacidad estén presentes
         if (!numero || !capacidad) {
@@ -148,7 +148,7 @@ const createTable = async (req, res, next) => {
         const table = await Table.create({
             numero,
             capacidad,
-            disponible: disponible !== undefined ? disponible : true // Por defecto, disponible
+            estado: estado || 'available' // Por defecto, available
         });
 
         logger.info(`Mesa creada exitosamente con ID: ${table.id}, número: ${table.numero}`);
@@ -204,7 +204,7 @@ const createTable = async (req, res, next) => {
 const updateTable = async (req, res, next) => {
     try {
         const { id } = req.params;
-        const { numero, capacidad, disponible } = req.body;
+        const { numero, capacidad, estado } = req.body;
 
         // Verificar si el nuevo número de mesa ya existe para otra mesa (si se está cambiando)
         if (numero) {
@@ -223,7 +223,7 @@ const updateTable = async (req, res, next) => {
 
         // Actualizar la mesa en la base de datos
         const [affectedRows] = await Table.update(
-            { numero, capacidad, disponible },
+            { numero, capacidad, estado },
             { where: { id } }
         );
 

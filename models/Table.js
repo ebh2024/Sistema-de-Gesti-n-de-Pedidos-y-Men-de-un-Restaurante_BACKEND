@@ -16,9 +16,9 @@ module.exports = (sequelize) => {
             type: DataTypes.INTEGER,
             allowNull: false
         },
-        disponible: {
-            type: DataTypes.TINYINT(1),
-            defaultValue: 1
+        estado: {
+            type: DataTypes.ENUM('available', 'occupied', 'cleaning'),
+            defaultValue: 'available'
         }
     }, {
         tableName: 'tables',

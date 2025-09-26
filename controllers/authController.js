@@ -36,7 +36,6 @@ const transporter = nodemailer.createTransport({
  *               - nombre
  *               - correo
  *               - contraseña
- *               - rol
  *             properties:
  *               nombre:
  *                 type: string
@@ -49,6 +48,10 @@ const transporter = nodemailer.createTransport({
  *                 type: string
  *                 format: password
  *                 description: Contraseña del usuario (se almacenará hasheada).
+ *               rol:
+ *                 type: string
+ *                 description: Rol del usuario (por defecto 'cliente').
+ *                 default: cliente
  *     responses:
  *       201:
  *         description: Usuario registrado exitosamente.
@@ -84,7 +87,14 @@ const register = async (req, res, next) => {
             return next(new AppError('Datos de entrada inválidos', 400));
         }
 
-        const { nombre, correo, contraseña, rol } = req.body;
+        const { nombre, correo, contraseña } = req.body;
+        const rol = 'cliente'; // Default role for new registrations
+
+        // Validar que nombre esté presente
+        if (!nombre) {
+            logger.warn('Intento de registro sin nombre.');
+            return next(new AppError('Nombre es requerido', 400));
+        }
 
         // Verificar si ya existe un usuario con el correo proporcionado
         const existingUser = await User.findOne({ where: { correo } });
@@ -296,16 +306,15 @@ const forgotPassword = async (req, res, next) => {
             { expiresIn: '1h' }
         );
 
-        // TODO: Implementar el envío real del correo electrónico con el enlace de restablecimiento
-        // const mailOptions = {
-        //     from: process.env.EMAIL_USER,
-        //     to: user.correo,
-        //     subject: 'Restablecimiento de Contraseña',
-        //     html: `<p>Haz clic en el siguiente enlace para restablecer tu contraseña: <a href="${process.env.CLIENT_URL}/reset-password?token=${resetToken}">Restablecer Contraseña</a></p>`
-        // };
-        // await transporter.sendMail(mailOptions);
+        const mailOptions = {
+            from: process.env.EMAIL_USER,
+            to: user.correo,
+            subject: 'Restablecimiento de Contraseña',
+            html: `<p>Haz clic en el siguiente enlace para restablecer tu contraseña: <a href="${process.env.CLIENT_URL}/reset-password?token=${resetToken}">Restablecer Contraseña</a></p>`
+        };
+        await transporter.sendMail(mailOptions);
 
-        logger.info(`Generado token de reseteo para ${user.correo}. Email de reseteo simulado enviado.`);
+        logger.info(`Generado token de reseteo para ${user.correo}. Email de reseteo enviado.`);
         res.json({ message: 'Instrucciones de reset enviadas al correo' });
     } catch (error) {
         logger.error(`Error en forgotPassword para ${req.body.correo}: ${error.message}`, { stack: error.stack });
