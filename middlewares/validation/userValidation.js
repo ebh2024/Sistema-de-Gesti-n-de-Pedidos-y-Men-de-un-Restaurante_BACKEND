@@ -51,7 +51,12 @@ exports.updateUserValidation = [
     body('is_active')
         .optional()
         .isBoolean()
-        .withMessage('is_active debe ser un valor booleano.')
+        .withMessage('is_active debe ser un valor booleano.'),
+    body('contraseña')
+        .optional()
+        .trim()
+        .isLength({ min: 6 })
+        .withMessage('La contraseña debe tener al menos 6 caracteres.')
 ];
 
 exports.deleteUserValidation = [
