@@ -26,8 +26,8 @@ const testConnection = async () => {
         logger.info('Conexión a la base de datos establecida correctamente.');
     } catch (error) {
         logger.error(`Error al conectar con la base de datos: ${error.message}`, { stack: error.stack });
-        // Optionally, exit the process if DB connection is critical for app startup
-        // process.exit(1);
+        // Exit the process if DB connection is critical for app startup
+        process.exit(1);
     }
 };
 
