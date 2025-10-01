@@ -5,69 +5,8 @@ const AppError = require('../utils/AppError');
 const logger = require('../utils/logger');
 const { sendEmail } = process.env.NODE_ENV === 'test' ? require('../tests/__mocks__/emailService') : require('../utils/emailService');
 require('dotenv').config();
-// No longer need bcrypt here as hashing is handled by model hooks
-const bcrypt = require('bcryptjs'); // Keep bcrypt for password comparison in login
+const bcrypt = require('bcryptjs');
 
-/**
- * @swagger
- * /api/auth/register:
- *   post:
- *     summary: Registra un nuevo usuario en el sistema.
- *     description: Crea una nueva cuenta de usuario con nombre, correo, contraseña y rol.
- *     tags: [Auth]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - nombre
- *               - correo
- *               - contraseña
- *             properties:
- *               nombre:
- *                 type: string
- *                 description: Nombre completo del usuario.
- *               correo:
- *                 type: string
- *                 format: email
- *                 description: Correo electrónico único del usuario.
- *               contraseña:
- *                 type: string
- *                 format: password
- *                 description: Contraseña del usuario (se almacenará hasheada).
- *               rol:
- *                 type: string
- *                 description: Rol del usuario (por defecto 'mesero').
- *                 default: mesero
- *     responses:
- *       201:
- *         description: Usuario registrado exitosamente.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: Usuario registrado exitosamente
- *                 userId:
- *                   type: integer
- *                   example: 1
- *       400:
- *         description: Error de validación o el correo ya está registrado.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: El correo ya está registrado
- *       500:
- *         description: Error interno del servidor.
- */
 const register = async (req, res, next) => {
     try {
         const errors = validationResult(req);
@@ -77,9 +16,9 @@ const register = async (req, res, next) => {
         }
 
         const { nombre, correo, contraseña } = req.body;
-        const rol = 'mesero'; // Default role for new registrations
+        const rol = 'mesero'; // Rol por defecto para nuevos registros
 
-        // Validar que nombre esté presente
+        // Validar que el nombre esté presente
         if (!nombre) {
             logger.warn('Intento de registro sin nombre.');
             return next(new AppError('Nombre es requerido', 400));
@@ -92,11 +31,11 @@ const register = async (req, res, next) => {
             return next(new AppError('El correo ya está registrado', 400));
         }
 
-        // Crear el nuevo usuario en la base de datos (password will be hashed by model hook)
+        // Crear el nuevo usuario en la base de datos (la contraseña será hasheada por el hook del modelo)
         const user = await User.create({
             nombre,
             correo,
-            contraseña, // Password will be hashed by model hook
+            contraseña,
             rol
         });
 
@@ -111,68 +50,11 @@ const register = async (req, res, next) => {
     }
 };
 
-/**
- * @swagger
- * /api/auth/login:
- *   post:
- *     summary: Autentica a un usuario y devuelve un token JWT.
- *     description: Permite a un usuario iniciar sesión con su correo y contraseña.
- *     tags: [Auth]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - correo
- *               - contraseña
- *             properties:
- *               correo:
- *                 type: string
- *                 format: email
- *                 description: Correo electrónico del usuario.
- *               contraseña:
- *                 type: string
- *                 format: password
- *                 description: Contraseña del usuario.
- *     responses:
- *       200:
- *         description: Inicio de sesión exitoso, devuelve un token JWT y datos del usuario.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: Login exitoso
- *                 token:
- *                   type: string
- *                   description: Token de autenticación JWT.
- *                 user:
- *                   type: object
- *                   properties:
- *                     id:
- *                       type: integer
- *                     nombre:
- *                       type: string
- *                     correo:
- *                       type: string
- *                     rol:
- *                       type: string
- *       400:
- *         description: Correo o contraseña no proporcionados.
- *       401:
- *         description: Credenciales inválidas o usuario inactivo.
- *       500:
- *         description: Error interno del servidor.
- */
 const login = async (req, res, next) => {
     try {
         const { correo, contraseña } = req.body;
 
-        // Validar que correo y contraseña estén presentes
+        // Validar que el correo y la contraseña estén presentes
         if (!correo || !contraseña) {
             logger.warn('Intento de login con campos incompletos.');
             return next(new AppError('Correo y contraseña son requeridos', 400));
@@ -223,44 +105,6 @@ const login = async (req, res, next) => {
     }
 };
 
-/**
- * @swagger
- * /api/auth/forgot-password:
- *   post:
- *     summary: Solicita un restablecimiento de contraseña.
- *     description: Envía un correo electrónico al usuario con un enlace para restablecer su contraseña.
- *     tags: [Auth]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - correo
- *             properties:
- *               correo:
- *                 type: string
- *                 format: email
- *                 description: Correo electrónico del usuario que olvidó su contraseña.
- *     responses:
- *       200:
- *         description: Si el correo existe, se envía un enlace de restablecimiento (simulado).
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: Instrucciones de reset enviadas al correo
- *       400:
- *         description: Correo electrónico no proporcionado.
- *       404:
- *         description: Usuario no encontrado con el correo electrónico proporcionado.
- *       500:
- *         description: Error interno del servidor o error al enviar el correo.
- */
 const forgotPassword = async (req, res, next) => {
     try {
         const { correo } = req.body;
@@ -308,46 +152,6 @@ const forgotPassword = async (req, res, next) => {
     }
 };
 
-/**
- * @swagger
- * /api/auth/reset-password:
- *   post:
- *     summary: Restablece la contraseña de un usuario.
- *     description: Permite a un usuario establecer una nueva contraseña utilizando un token de restablecimiento válido.
- *     tags: [Auth]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - token
- *               - nuevaContraseña
- *             properties:
- *               token:
- *                 type: string
- *                 description: Token de restablecimiento de contraseña recibido por correo.
- *               nuevaContraseña:
- *                 type: string
- *                 format: password
- *                 description: La nueva contraseña para el usuario (mínimo 6 caracteres).
- *     responses:
- *       200:
- *         description: Contraseña actualizada exitosamente.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: Contraseña actualizada exitosamente
- *       400:
- *         description: Token inválido o expirado, o nueva contraseña no proporcionada.
- *       500:
- *         description: Error interno del servidor.
- */
 const resetPassword = async (req, res, next) => {
     try {
         const { token, nuevaContraseña } = req.body;
@@ -361,14 +165,14 @@ const resetPassword = async (req, res, next) => {
         // Verificar y decodificar el token JWT
         const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key');
 
-        // Actualizar la contraseña del usuario en la base de datos (password will be hashed by model hook)
-        // Find the user first to trigger the beforeUpdate hook
+        // Actualizar la contraseña del usuario en la base de datos (la contraseña será hasheada por el hook del modelo)
+        // Buscar el usuario primero para activar el hook beforeUpdate
         const user = await User.findByPk(decoded.id);
         if (!user) {
             logger.warn(`Intento de restablecimiento de contraseña para usuario no encontrado: ID ${decoded.id}`);
             return next(new AppError('Usuario no encontrado', 404));
         }
-        user.contraseña = nuevaContraseña; // Assign new password, hook will hash it
+        user.contraseña = nuevaContraseña; // Asignar nueva contraseña, el hook la hasheará
         await user.save();
 
         logger.info(`Contraseña actualizada para el usuario ID: ${decoded.id}`);

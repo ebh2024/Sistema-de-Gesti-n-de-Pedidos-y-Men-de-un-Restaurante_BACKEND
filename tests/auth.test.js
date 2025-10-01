@@ -1,14 +1,13 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
-const app = require('../server'); // Import the Express app
-const { sequelize, User } = require('../models'); // Only import User and sequelize
-const jwt = require('jsonwebtoken'); // Import jwt for creating reset tokens
-// bcrypt is no longer needed here as password hashing is handled by model hooks and comparison is done in controller
+const app = require('../server');
+const { sequelize, User } = require('../models');
+const jwt = require('jsonwebtoken');
 
-process.env.NODE_ENV = 'test'; // Ensure test environment is loaded
-process.env.JWT_SECRET = 'test-secret-key'; // Use a test secret key for JWT
-process.env.CLIENT_URL = 'http://localhost:3000'; // Mock client URL for email links
-process.env.EMAIL_USER = 'test@example.com'; // Mock email user for email service
+process.env.NODE_ENV = 'test';
+process.env.JWT_SECRET = 'test-secret-key';
+process.env.CLIENT_URL = 'http://localhost:3000';
+process.env.EMAIL_USER = 'test@example.com';
 
 chai.use(chaiHttp);
 const expect = chai.expect;
@@ -20,24 +19,19 @@ describe('Auth API', () => {
 
     before(async () => {
         try {
-            // Disable foreign key checks
             await sequelize.query('SET FOREIGN_KEY_CHECKS = 0', null, { raw: true });
 
-            // Synchronize the database and force drop existing tables
             await sequelize.sync({ force: true });
 
-            // Re-enable foreign key checks
             await sequelize.query('SET FOREIGN_KEY_CHECKS = 1', null, { raw: true });
 
-            // Create a test user (password will be hashed by model hook)
             testUser = await User.create({
                 nombre: 'testuser',
                 correo: 'testuser@example.com',
-                contraseña: testUserPassword, // Pass plain-text password, model hook will hash it
+                contraseña: testUserPassword,
                 rol: 'admin'
             });
 
-            // Create an inactive user
             inactiveUser = await User.create({
                 nombre: 'inactiveuser',
                 correo: 'inactive@example.com',
@@ -51,21 +45,17 @@ describe('Auth API', () => {
             if (error.errors) {
                 error.errors.forEach(err => console.error('Validation error detail:', err.message, err.path, err.value));
             }
-            throw error; // Re-throw to fail the test
+            throw error; // Volver a lanzar para que la prueba falle
         }
     });
 
     after(async () => {
-        // Disable foreign key checks before dropping tables
         await sequelize.query('SET FOREIGN_KEY_CHECKS = 0', null, { raw: true });
 
-        // Clean up: drop all tables
         await sequelize.drop();
 
-        // Re-enable foreign key checks
         await sequelize.query('SET FOREIGN_KEY_CHECKS = 1', null, { raw: true });
 
-        // Close the database connection
         await sequelize.close();
     });
 
@@ -97,7 +87,7 @@ describe('Auth API', () => {
                     expect(res).to.have.status(201);
                     expect(res.body).to.be.an('object');
                     expect(res.body).to.have.property('message').equal('Usuario registrado exitosamente');
-                    expect(res.body).to.have.property('userId'); // Expect userId instead of user
+                    expect(res.body).to.have.property('userId');
                     done();
                 });
         });
@@ -107,7 +97,7 @@ describe('Auth API', () => {
                 .post('/api/auth/register')
                 .send({
                     nombre: 'existinguser',
-                    correo: 'testuser@example.com', // Use the email of the user created in before hook
+                    correo: 'testuser@example.com',
                     contraseña: 'password123',
                     rol: 'mesero'
                 })
@@ -126,7 +116,6 @@ describe('Auth API', () => {
                     nombre: 'incomplete',
                     correo: 'incomplete@example.com',
                     rol: 'mesero'
-                    // Missing contraseña
                 })
                 .end((err, res) => {
                     expect(res).to.have.status(400);
@@ -147,7 +136,7 @@ describe('Auth API', () => {
                 .end((err, res) => {
                     expect(res).to.have.status(400);
                     expect(res.body).to.be.an('object');
-                    expect(res.body).to.have.property('message'); // Expect a message, as validation errors are aggregated
+                    expect(res.body).to.have.property('message');
                     expect(res.body.message).to.include('El nombre es requerido.');
                     done();
                 });
@@ -223,7 +212,6 @@ describe('Auth API', () => {
                 .post('/api/auth/login')
                 .send({
                     correo: testUser.correo
-                    // Missing contraseña
                 })
                 .end((err, res) => {
                     expect(res).to.have.status(400);
@@ -288,7 +276,6 @@ describe('Auth API', () => {
         let resetToken;
 
         before(async () => {
-            // Generate a valid reset token for testUser
             resetToken = jwt.sign(
                 { id: testUser.id, correo: testUser.correo },
                 process.env.JWT_SECRET,
@@ -327,14 +314,12 @@ describe('Auth API', () => {
         });
 
         it('should return 400 for an expired token', (done) => {
-            // Create an expired token
             const expiredToken = jwt.sign(
                 { id: testUser.id, correo: testUser.correo },
                 process.env.JWT_SECRET,
-                { expiresIn: '0s' } // Immediately expired
+                { expiresIn: '0s' }
             );
 
-            // Wait a bit for the token to actually expire
             setTimeout(() => {
                 chai.request(app)
                     .post('/api/auth/reset-password')
@@ -348,7 +333,7 @@ describe('Auth API', () => {
                         expect(res.body).to.have.property('message').equal('Token inválido o expirado');
                         done();
                     });
-            }, 100); // Wait 100ms
+            }, 100);
         });
 
         it('should return 400 if token or nuevaContraseña is missing', (done) => {
@@ -356,7 +341,6 @@ describe('Auth API', () => {
                 .post('/api/auth/reset-password')
                 .send({
                     token: resetToken
-                    // Missing nuevaContraseña
                 })
                 .end((err, res) => {
                     expect(res).to.have.status(400);
@@ -371,7 +355,7 @@ describe('Auth API', () => {
                 .post('/api/auth/reset-password')
                 .send({
                     token: resetToken,
-                    nuevaContraseña: 'short' // Less than 6 characters
+                    nuevaContraseña: 'short'
                 })
                 .end((err, res) => {
                     expect(res).to.have.status(400);

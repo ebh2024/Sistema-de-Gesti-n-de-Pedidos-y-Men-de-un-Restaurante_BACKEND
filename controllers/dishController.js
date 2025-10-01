@@ -4,29 +4,11 @@ const baseController = require('./baseController');
 
 const dishController = baseController(Dish);
 
-/**
- * @swagger
- * /api/dishes/public:
- *   get:
- *     summary: Obtiene todos los platos disponibles para el menú público.
- *     tags: [Dishes]
- *     responses:
- *       200:
- *         description: Lista de platos disponibles.
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Dish'
- *       500:
- *         description: Error interno del servidor.
- */
 const getAvailableDishes = async (req, res, next) => {
     try {
         const dishes = await Dish.findAll({
-            where: { disponibilidad: 1 }, // Only available dishes
-            order: [['created_at', 'DESC']] // Ordenar por fecha de creación descendente
+            where: { disponibilidad: 1 },
+            order: [['created_at', 'DESC']]
         });
         logger.info('Se obtuvieron los platos disponibles para el menú público exitosamente.');
         res.json(dishes);
@@ -36,24 +18,6 @@ const getAvailableDishes = async (req, res, next) => {
     }
 };
 
-/**
- * @swagger
- * /api/dishes:
- *   get:
- *     summary: Obtiene todos los platos disponibles.
- *     tags: [Dishes]
- *     responses:
- *       200:
- *         description: Lista de todos los platos.
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Dish'
- *       500:
- *         description: Error interno del servidor.
- */
 module.exports = {
     getAvailableDishes,
     getAllDishes: dishController.getAll,

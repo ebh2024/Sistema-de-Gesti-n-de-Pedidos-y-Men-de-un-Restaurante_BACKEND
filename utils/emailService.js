@@ -2,10 +2,6 @@ const nodemailer = require('nodemailer');
 const logger = require('./logger');
 require('dotenv').config();
 
-/**
- * Configuración del transportador de correo para el envío de emails.
- * Utiliza el servicio de Gmail y las credenciales definidas en las variables de entorno.
- */
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -14,10 +10,6 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-/**
- * Envía un correo electrónico utilizando el transportador configurado.
- * @param {object} mailOptions - Opciones del correo electrónico (from, to, subject, html/text).
- */
 const sendEmail = async (mailOptions) => {
     try {
         await transporter.sendMail(mailOptions);

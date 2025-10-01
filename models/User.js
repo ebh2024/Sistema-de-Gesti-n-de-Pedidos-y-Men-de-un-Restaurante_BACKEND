@@ -1,5 +1,5 @@
 const { DataTypes } = require('sequelize');
-const bcrypt = require('bcryptjs'); // Import bcryptjs
+const bcrypt = require('bcryptjs');
 
 module.exports = (sequelize) => {
     const User = sequelize.define('User', {
@@ -36,7 +36,6 @@ module.exports = (sequelize) => {
         updatedAt: 'updated_at'
     });
 
-    // Hooks para hashear la contraseña antes de guardar o actualizar
     User.beforeCreate(async (user) => {
         user.contraseña = await bcrypt.hash(user.contraseña, 10);
     });

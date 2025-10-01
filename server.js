@@ -5,12 +5,12 @@ const rateLimit = require('express-rate-limit');
 const swaggerUi = require('swagger-ui-express');
 const helmet = require('helmet');
 const YAML = require('yamljs');
-require('dotenv').config(); // Load default .env first
+require('dotenv').config(); // Cargar .env por defecto primero
 
-// Ensure NODE_ENV is set, default to 'development'
+// Asegurar que NODE_ENV esté configurado, por defecto 'development'
 process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 
-// If in test environment, load .env.test and override
+// Si está en entorno de prueba, cargar .env.test y sobrescribir
 if (process.env.NODE_ENV === 'test') {
     require('dotenv').config({ path: '.env.test', override: true });
 }
@@ -24,7 +24,7 @@ if (!process.env.JWT_SECRET) {
     } else {
         logger.warn(errorMessage + ' Se utilizará un valor por defecto para desarrollo/pruebas.');
         // Opcional: Asignar un valor por defecto para desarrollo si es absolutamente necesario
-        process.env.JWT_SECRET = 'supersecretdevkey'; 
+        process.env.JWT_SECRET = 'supersecretdevkey';
     }
 }
 
@@ -39,7 +39,6 @@ const AppError = require('./utils/AppError');
 // Importar el middleware global de manejo de errores
 const globalErrorHandler = require('./middlewares/errorHandler');
 
-// Importar modelos y establecer asociaciones de la base de datos
 // Solo importar y sincronizar modelos si no estamos en el entorno de prueba
 if (process.env.NODE_ENV !== 'test') {
     require('./models');
@@ -61,17 +60,11 @@ if (process.env.NODE_ENV !== 'test') {
 // Usar Helmet para establecer cabeceras de seguridad HTTP
 app.use(helmet());
 
-/**
- * Configuración de CORS (Cross-Origin Resource Sharing).
- * Permite o deniega solicitudes de diferentes orígenes basándose en la variable de entorno CORS_ORIGIN.
- */
 const allowedOrigins = process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : [];
 
 app.use(cors({
     origin: (origin, callback) => {
-        // Permitir solicitudes sin origen (ej. aplicaciones móviles, solicitudes curl)
         if (!origin) return callback(null, true);
-        // Verificar si el origen de la solicitud está en la lista de orígenes permitidos
         if (allowedOrigins.indexOf(origin) === -1) {
             const msg = 'La política CORS para este sitio no permite el acceso desde el Origen especificado.';
             return callback(new AppError(msg, 403), false);
@@ -81,83 +74,42 @@ app.use(cors({
     credentials: true // Permitir el envío de cookies de origen cruzado
 }));
 
-// Middleware para parsear el cuerpo de las solicitudes en formato JSON
-app.use(express.json());
-// Middleware para parsear el cuerpo de las solicitudes en formato URL-encoded
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json()); // Middleware para parsear el cuerpo de las solicitudes en formato JSON
+app.use(express.urlencoded({ extended: true })); // Middleware para parsear el cuerpo de las solicitudes en formato URL-encoded
 
-/**
- * Configurar Morgan para registrar solicitudes HTTP.
- * Utiliza el formato 'combined' y envía los logs al logger personalizado.
- */
-app.use(morgan('combined', { stream: { write: message => logger.info(message.trim()) } }));
+app.use(morgan('combined', { stream: { write: message => logger.info(message.trim()) } })); // Configurar Morgan para registrar solicitudes HTTP
 
-// Importar rutas de la API
-const authRoutes = require('./routes/auth');
+const authRoutes = require('./routes/auth'); // Importar rutas de la API
 const dishRoutes = require('./routes/dishes');
 const tableRoutes = require('./routes/tables');
 const orderRoutes = require('./routes/orders');
 const userRoutes = require('./routes/users');
 
-// Definir las rutas base para cada módulo de la API
-app.use('/api/auth', authRoutes);
+app.use('/api/auth', authRoutes); // Definir las rutas base para cada módulo de la API
 app.use('/api/dishes', dishRoutes);
 app.use('/api/tables', tableRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/users', userRoutes);
 
-// Cargar el archivo de definición de Swagger
-const swaggerDocument = YAML.load('./docs/swagger.yaml');
+const swaggerDocument = YAML.load('./docs/swagger.yaml'); // Cargar el archivo de definición de Swagger
 
-// Servir la documentación de Swagger UI
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument)); // Servir la documentación de Swagger UI
 
-/**
- * @swagger
- * /api/health:
- *   get:
- *     summary: Verifica el estado de salud de la API
- *     tags: [Health]
- *     responses:
- *       200:
- *         description: La API está funcionando correctamente
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: API funcionando correctamente
- *                 timestamp:
- *                   type: string
- *                   format: date-time
- *                   example: 2025-09-23T10:00:00.000Z
- */
 app.get('/api/health', (req, res) => {
     res.json({ message: 'API funcionando correctamente', timestamp: new Date().toISOString() });
 });
 
-/**
- * Middleware para manejar rutas no definidas (404 Not Found).
- * Captura cualquier solicitud que no haya sido manejada por las rutas anteriores.
- */
 app.use((req, res, next) => {
     next(new AppError(`No se puede encontrar ${req.originalUrl} en este servidor!`, 404));
-});
+}); // Middleware para manejar rutas no definidas (404 Not Found).
 
-// Middleware global de manejo de errores. Debe ser el último middleware.
-app.use(globalErrorHandler);
+app.use(globalErrorHandler); // Middleware global de manejo de errores. Debe ser el último middleware.
 
-/**
- * Iniciar el servidor Express.
- * Escucha en el puerto definido y registra un mensaje en la consola.
- */
 if (process.env.NODE_ENV !== 'test') {
     app.listen(PORT, () => {
         logger.info(`Servidor corriendo en el puerto ${PORT}`);
         logger.info(`API Health check disponible en: http://localhost:${PORT}/api/health`);
     });
-}
+} // Iniciar el servidor Express.
 
 module.exports = app;

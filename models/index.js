@@ -9,14 +9,12 @@ const db = {};
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
-// Import models and pass the sequelize instance
 db.User = require('./User')(sequelize);
 db.Dish = require('./Dish')(sequelize);
 db.Table = require('./Table')(sequelize);
 db.Order = require('./Order')(sequelize);
 db.OrderDetail = require('./OrderDetail')(sequelize);
 
-// Define associations
 db.User.hasMany(db.Order, {
     foreignKey: 'id_mesero',
     as: 'orders'
@@ -57,8 +55,7 @@ db.OrderDetail.belongsTo(db.Dish, {
     as: 'plato'
 });
 
-// Sync database
-const logger = require('../utils/logger'); // Import the logger
+const logger = require('../utils/logger');
 
 const syncDatabase = async (force = false) => {
     try {
@@ -69,7 +66,6 @@ const syncDatabase = async (force = false) => {
     }
 };
 
-// Only sync database on startup if not in test environment
 if (process.env.NODE_ENV !== 'test') {
     syncDatabase();
 }

@@ -31,7 +31,7 @@ module.exports = (sequelize) => {
             type: DataTypes.DECIMAL(10, 2),
             allowNull: false,
             validate: {
-                min: 0.01 // Ensure unit price is positive
+                min: 0.01
             }
         }
     }, {

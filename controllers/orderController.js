@@ -1,12 +1,6 @@
 const orderService = require('../services/orderService');
 const logger = require('../utils/logger');
 
-/**
- * @swagger
- * tags:
- *   name: Orders
- *   description: Gestión de pedidos
- */
 
 /**
  * @swagger
