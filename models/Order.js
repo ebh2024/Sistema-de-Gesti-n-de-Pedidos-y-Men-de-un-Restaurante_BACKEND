@@ -29,7 +29,10 @@ module.exports = (sequelize) => {
         },
         total: {
             type: DataTypes.DECIMAL(10, 2),
-            defaultValue: 0
+            defaultValue: 0,
+            validate: {
+                min: 0.00 // Ensure total is non-negative
+            }
         }
     }, {
         tableName: 'orders',

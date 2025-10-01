@@ -29,7 +29,10 @@ module.exports = (sequelize) => {
         },
         precio_unitario: {
             type: DataTypes.DECIMAL(10, 2),
-            allowNull: false
+            allowNull: false,
+            validate: {
+                min: 0.01 // Ensure unit price is positive
+            }
         }
     }, {
         tableName: 'order_details',

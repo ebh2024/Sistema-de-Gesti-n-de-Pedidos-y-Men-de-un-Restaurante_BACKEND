@@ -17,7 +17,10 @@ module.exports = (sequelize) => {
         },
         precio: {
             type: DataTypes.DECIMAL(10, 2),
-            allowNull: false
+            allowNull: false,
+            validate: {
+                min: 0.01 // Ensure price is positive
+            }
         },
         disponibilidad: {
             type: DataTypes.TINYINT(1),
