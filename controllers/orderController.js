@@ -1,5 +1,4 @@
-const { Order, OrderDetail, Table, User, Dish, sequelize } = require('../models');
-const AppError = require('../utils/AppError');
+const orderService = require('../services/orderService');
 const logger = require('../utils/logger');
 
 /**
@@ -49,33 +48,7 @@ const logger = require('../utils/logger');
  */
 const getAllOrders = async (req, res, next) => {
     try {
-        // Si el usuario es un mesero, solo puede ver sus propios pedidos
-        const whereCondition = req.user.rol === 'mesero' ? { id_mesero: req.user.id } : {};
-
-        const orders = await Order.findAll({
-            where: whereCondition,
-            include: [
-                {
-                    model: Table,
-                    as: 'mesa',
-                    attributes: ['numero']
-                },
-                {
-                    model: User,
-                    as: 'mesero',
-                    attributes: ['nombre']
-                }
-            ],
-            order: [['created_at', 'DESC']] // Ordenar por fecha de creación descendente
-        });
-
-        // Formatear la salida para incluir el número de mesa y el nombre del mesero directamente
-        const formattedOrders = orders.map(order => ({
-            ...order.toJSON(),
-            mesa_numero: order.mesa.numero,
-            mesero_nombre: order.mesero.nombre
-        }));
-
+        const formattedOrders = await orderService.getAllOrders(req.user);
         logger.info(`Se obtuvieron ${formattedOrders.length} pedidos.`);
         res.json(formattedOrders);
     } catch (error) {
@@ -147,61 +120,11 @@ const getAllOrders = async (req, res, next) => {
 const getOrderById = async (req, res, next) => {
     try {
         const { id } = req.params;
-
-        // Condición para asegurar que un mesero solo pueda ver sus propios pedidos
-        const whereCondition = req.user.rol === 'mesero'
-            ? { id, id_mesero: req.user.id }
-            : { id };
-
-        // Obtener el pedido con sus relaciones (mesa, mesero, detalles y platos)
-        const order = await Order.findOne({
-            where: whereCondition,
-            include: [
-                {
-                    model: Table,
-                    as: 'mesa',
-                    attributes: ['numero']
-                },
-                {
-                    model: User,
-                    as: 'mesero',
-                    attributes: ['nombre']
-                },
-                {
-                    model: OrderDetail,
-                    as: 'detalles',
-                    include: [
-                        {
-                            model: Dish,
-                            as: 'plato',
-                            attributes: ['nombre', 'precio']
-                        }
-                    ]
-                }
-            ]
-        });
-
-        if (!order) {
-            logger.warn(`Intento de obtener pedido con ID no encontrado: ${id} o no autorizado.`);
-            return next(new AppError('Pedido no encontrado', 404));
-        }
-
-        // Formatear la salida para incluir el número de mesa, el nombre del mesero y los detalles del plato
-        const formattedOrder = {
-            ...order.toJSON(),
-            mesa_numero: order.mesa.numero,
-            mesero_nombre: order.mesero.nombre,
-            detalles: order.detalles.map(detalle => ({
-                ...detalle.toJSON(),
-                plato_nombre: detalle.plato.nombre,
-                precio_actual: detalle.plato.precio
-            }))
-        };
-
+        const formattedOrder = await orderService.getOrderById(id, req.user);
         logger.info(`Se obtuvo el pedido con ID: ${id} exitosamente.`);
         res.json(formattedOrder);
     } catch (error) {
-        logger.error(`Error al obtener pedido por ID ${id}: ${error.message}`, { stack: error.stack });
+        logger.error(`Error al obtener pedido por ID ${req.params.id}: ${error.message}`, { stack: error.stack });
         next(error);
     }
 };
@@ -271,84 +194,16 @@ const getOrderById = async (req, res, next) => {
  *         description: Error interno del servidor.
  */
 const createOrder = async (req, res, next) => {
-    // Iniciar una transacción para asegurar la atomicidad de la operación
-    const transaction = await sequelize.transaction();
-
     try {
-        const { id_mesa, detalles, estado = 'pendiente' } = req.body;
-
-        // Verificar que la mesa existe
-        const table = await Table.findByPk(id_mesa, { transaction });
-        if (!table) {
-            logger.warn(`Intento de crear pedido para mesa no encontrada: ${id_mesa}`);
-            return next(new AppError('Mesa no encontrada', 404));
-        }
-
-        // Solo verificar disponibilidad si no es borrador
-        if (estado !== 'borrador' && table.estado !== 'available') {
-            logger.warn(`Intento de crear pedido para mesa no disponible: ${id_mesa}`);
-            return next(new AppError('La mesa no está disponible', 400));
-        }
-
-        let total = 0;
-        const orderDetailsToCreate = [];
-
-        // Iterar sobre los detalles del pedido para calcular el total y verificar la disponibilidad de los platos
-        for (const detalle of detalles) {
-            const dish = await Dish.findOne({
-                where: {
-                    id: detalle.id_plato,
-                    disponibilidad: true // Verificar que el plato esté disponible
-                },
-                transaction
-            });
-
-            if (!dish) {
-                logger.warn(`Plato ${detalle.id_plato} no encontrado o no disponible durante la creación del pedido.`);
-                return next(new AppError(`Plato ${detalle.id_plato} no encontrado o no disponible`, 400));
-            }
-
-            total += dish.precio * detalle.cantidad;
-            orderDetailsToCreate.push({
-                id_plato: detalle.id_plato,
-                cantidad: detalle.cantidad,
-                precio_unitario: dish.precio
-            });
-        }
-
-        // Crear el pedido principal
-        const order = await Order.create({
-            id_mesa,
-            id_mesero: req.user.id, // Asignar el pedido al mesero autenticado
-            estado,
-            total
-        }, { transaction });
-
-        // Crear los detalles del pedido asociados al pedido principal
-        for (const detalle of orderDetailsToCreate) {
-            await OrderDetail.create({
-                id_pedido: order.id,
-                ...detalle
-            }, { transaction });
-        }
-
-        // Marcar la mesa como no disponible solo si no es borrador
-        if (estado !== 'borrador') {
-            await Table.update(
-                { estado: 'occupied' },
-                { where: { id: id_mesa }, transaction }
-            );
-        }
-
-        await transaction.commit(); // Confirmar la transacción
-        logger.info(`Pedido creado exitosamente con ID: ${order.id} por el mesero ${req.user.id}. Estado: ${estado}. Total: ${total}`);
+        const { id_mesa, detalles, estado } = req.body;
+        const { orderId, total } = await orderService.createOrder(id_mesa, detalles, req.user.id, estado);
+        logger.info(`Pedido creado exitosamente con ID: ${orderId} por el mesero ${req.user.id}. Estado: ${estado}. Total: ${total}`);
         res.status(201).json({
             message: 'Pedido creado exitosamente',
-            orderId: order.id,
+            orderId: orderId,
             total: total
         });
     } catch (error) {
-        await transaction.rollback();
         logger.error(`Error al crear pedido: ${error.message}`, { stack: error.stack });
         next(error);
     }
@@ -404,74 +259,14 @@ const createOrder = async (req, res, next) => {
  *         description: Error interno del servidor.
  */
 const updateOrder = async (req, res, next) => {
-    const transaction = await sequelize.transaction();
-
     try {
         const { id } = req.params;
         const { detalles } = req.body;
-
-        // Condición para asegurar que un mesero solo pueda actualizar sus propios pedidos
-        const whereCondition = req.user.rol === 'mesero'
-            ? { id, id_mesero: req.user.id, estado: 'borrador' }
-            : { id, estado: 'borrador' };
-
-        const order = await Order.findOne({ where: whereCondition, transaction });
-
-        if (!order) {
-            logger.warn(`Intento de actualizar pedido no encontrado, no autorizado o no es borrador: ${id}`);
-            return next(new AppError('Pedido no encontrado o no se puede editar', 404));
-        }
-
-        let total = 0;
-        const orderDetailsToCreate = [];
-
-        // Iterar sobre los detalles del pedido para calcular el total y verificar la disponibilidad de los platos
-        for (const detalle of detalles) {
-            const dish = await Dish.findOne({
-                where: {
-                    id: detalle.id_plato,
-                    disponibilidad: true
-                },
-                transaction
-            });
-
-            if (!dish) {
-                logger.warn(`Plato ${detalle.id_plato} no encontrado o no disponible durante la actualización del pedido.`);
-                return next(new AppError(`Plato ${detalle.id_plato} no encontrado o no disponible`, 400));
-            }
-
-            total += dish.precio * detalle.cantidad;
-            orderDetailsToCreate.push({
-                id_pedido: order.id,
-                id_plato: detalle.id_plato,
-                cantidad: detalle.cantidad,
-                precio_unitario: dish.precio
-            });
-        }
-
-        // Eliminar detalles antiguos
-        await OrderDetail.destroy({
-            where: { id_pedido: id },
-            transaction
-        });
-
-        // Crear nuevos detalles
-        for (const detalle of orderDetailsToCreate) {
-            await OrderDetail.create(detalle, { transaction });
-        }
-
-        // Actualizar total del pedido
-        await Order.update(
-            { total },
-            { where: { id }, transaction }
-        );
-
-        await transaction.commit();
+        const { message, total } = await orderService.updateOrder(id, detalles, req.user);
         logger.info(`Pedido ${id} actualizado exitosamente. Nuevo total: ${total}`);
-        res.json({ message: 'Pedido actualizado exitosamente', total });
+        res.json({ message, total });
     } catch (error) {
-        await transaction.rollback();
-        logger.error(`Error al actualizar pedido ${id}: ${error.message}`, { stack: error.stack });
+        logger.error(`Error al actualizar pedido ${req.params.id}: ${error.message}`, { stack: error.stack });
         next(error);
     }
 };
@@ -519,46 +314,9 @@ const updateOrderStatus = async (req, res, next) => {
     try {
         const { id } = req.params;
         const { estado } = req.body;
-
-        // Condición para asegurar que un mesero solo pueda actualizar sus propios pedidos
-        const whereCondition = req.user.rol === 'mesero'
-            ? { id, id_mesero: req.user.id }
-            : { id };
-
-        const order = await Order.findOne({ where: whereCondition });
-
-        if (!order) {
-            logger.warn(`Intento de actualizar estado de pedido con ID no encontrado: ${id} o no autorizado.`);
-            return next(new AppError('Pedido no encontrado', 404));
-        }
-
-        // Si cambiando de borrador a pendiente, marcar mesa no disponible
-        if (order.estado === 'borrador' && estado === 'pendiente') {
-            const table = await Table.findByPk(order.id_mesa);
-            if (table.estado !== 'available') {
-                logger.warn(`Intento de enviar pedido para mesa no disponible: ${order.id_mesa}`);
-                return next(new AppError('La mesa no está disponible', 400));
-            }
-            await Table.update({ estado: 'occupied' }, { where: { id: order.id_mesa } });
-        }
-
-        // Actualizar el estado del pedido
-        await Order.update(
-            { estado },
-            { where: { id } }
-        );
-
-        // Si el pedido se marca como 'servido', liberar la mesa asociada
-        if (estado === 'servido') {
-            await Table.update(
-                { estado: 'available' },
-                { where: { id: order.id_mesa } }
-            );
-            logger.info(`Mesa ${order.id_mesa} liberada tras servir el pedido ${id}.`);
-        }
-
+        const { message } = await orderService.updateOrderStatus(id, estado, req.user);
         logger.info(`Estado del pedido con ID: ${id} actualizado a '${estado}' exitosamente.`);
-        res.json({ message: 'Estado del pedido actualizado exitosamente' });
+        res.json({ message });
     } catch (error) {
         logger.error(`Error al actualizar estado del pedido con ID ${req.params.id}: ${error.message}`, { stack: error.stack });
         next(error);
@@ -590,53 +348,13 @@ const updateOrderStatus = async (req, res, next) => {
  *         description: Error interno del servidor.
  */
 const deleteOrder = async (req, res, next) => {
-    // Iniciar una transacción para asegurar la atomicidad de la operación
-    const transaction = await sequelize.transaction();
-
     try {
         const { id } = req.params;
-
-        // Condición para asegurar que un mesero solo pueda eliminar sus propios pedidos
-        const whereCondition = req.user.rol === 'mesero'
-            ? { id, id_mesero: req.user.id }
-            : { id };
-
-        const order = await Order.findOne({
-            where: whereCondition,
-            transaction
-        });
-
-        if (!order) {
-            logger.warn(`Intento de eliminar pedido con ID no encontrado: ${id} o no autorizado.`);
-            return next(new AppError('Pedido no encontrado', 404));
-        }
-
-        // Eliminar los detalles del pedido asociados
-        await OrderDetail.destroy({
-            where: { id_pedido: id },
-            transaction
-        });
-        logger.info(`Detalles del pedido ${id} eliminados.`);
-
-        // Liberar la mesa asociada al pedido
-        await Table.update(
-            { estado: 'available' },
-            { where: { id: order.id_mesa }, transaction }
-        );
-        logger.info(`Mesa ${order.id_mesa} liberada tras eliminar el pedido ${id}.`);
-
-        // Eliminar el pedido principal
-        await Order.destroy({
-            where: { id },
-            transaction
-        });
-
-        await transaction.commit(); // Confirmar la transacción
+        const { message } = await orderService.deleteOrder(id, req.user);
         logger.info(`Pedido con ID: ${id} eliminado exitosamente.`);
-        res.json({ message: 'Pedido eliminado exitosamente' });
+        res.json({ message });
     } catch (error) {
-        await transaction.rollback(); // Revertir la transacción en caso de error
-        logger.error(`Error al eliminar pedido con ID ${id}: ${error.message}`, { stack: error.stack });
+        logger.error(`Error al eliminar pedido con ID ${req.params.id}: ${error.message}`, { stack: error.stack });
         next(error);
     }
 };
