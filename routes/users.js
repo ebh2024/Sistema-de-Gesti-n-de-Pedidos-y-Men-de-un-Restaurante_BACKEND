@@ -4,8 +4,7 @@ const userController = require('../controllers/userController');
 const { authenticateToken, authorizeRoles } = require('../middlewares/auth');
 const {
     createUserValidation,
-    updateUserValidation,
-    deleteUserValidation
+    updateUserValidation
 } = require('../middlewares/validation/userValidation');
 const { handleValidationErrors } = require('../middlewares/errorHandler');
 
@@ -152,6 +151,6 @@ router.put('/:id', updateUserValidation, handleValidationErrors, userController.
  *       404:
  *         description: Usuario no encontrado
  */
-router.delete('/:id', deleteUserValidation, handleValidationErrors, userController.deleteUser);
+router.delete('/:id', userController.deleteUser);
 
 module.exports = router;
