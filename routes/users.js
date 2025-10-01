@@ -7,6 +7,7 @@ const {
     updateUserValidation,
     deleteUserValidation
 } = require('../middlewares/validation/userValidation');
+const { handleValidationErrors } = require('../middlewares/errorHandler');
 
 /**
  * @swagger
@@ -62,7 +63,7 @@ router.use(authorizeRoles('admin'));
  *       403:
  *         description: Acceso denegado
  */
-router.post('/', createUserValidation, userController.createUser);
+router.post('/', createUserValidation, handleValidationErrors, userController.createUser);
 
 /**
  * @swagger
@@ -126,7 +127,7 @@ router.get('/', userController.getUsers);
  *       404:
  *         description: Usuario no encontrado
  */
-router.put('/:id', updateUserValidation, userController.updateUser);
+router.put('/:id', updateUserValidation, handleValidationErrors, userController.updateUser);
 
 /**
  * @swagger
@@ -151,6 +152,6 @@ router.put('/:id', updateUserValidation, userController.updateUser);
  *       404:
  *         description: Usuario no encontrado
  */
-router.delete('/:id', deleteUserValidation, userController.deleteUser);
+router.delete('/:id', deleteUserValidation, handleValidationErrors, userController.deleteUser);
 
 module.exports = router;

@@ -1,8 +1,8 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const app = require('../server'); // Import the Express app
-const { sequelize, User, Table, Dish, Order, OrderDetail } = require('../models'); // Import all necessary models
-const bcrypt = require('bcryptjs');
+const { sequelize, User } = require('../models'); // Only import User and sequelize
+// bcrypt is no longer needed here as password hashing is handled by model hooks and comparison is done in controller
 
 process.env.NODE_ENV = 'test'; // Ensure test environment is loaded
 
@@ -24,14 +24,13 @@ describe('Auth API', () => {
             // Re-enable foreign key checks
             await sequelize.query('SET FOREIGN_KEY_CHECKS = 1', null, { raw: true });
 
-            // Create a test user
-            const hashedPassword = await bcrypt.hash(testUserPassword, 10);
+            // Create a test user (password will be hashed by model hook)
             testUser = await User.create({
                 nombre: 'testuser',
-            correo: 'testuser@example.com', // Changed email for the initial test user
-            contraseña: hashedPassword,
-            rol: 'admin'
-        });
+                correo: 'testuser@example.com',
+                contraseña: testUserPassword, // Pass plain-text password, model hook will hash it
+                rol: 'admin'
+            });
         } catch (error) {
             console.error('Error during test setup (before hook):', error);
             if (error.errors) {

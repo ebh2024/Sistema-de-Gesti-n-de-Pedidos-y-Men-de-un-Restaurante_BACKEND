@@ -1,4 +1,4 @@
-const { Sequelize, DataTypes } = require('sequelize');
+const { Sequelize } = require('sequelize');
 
 const sequelize = process.env.NODE_ENV === 'test'
     ? require('../config/database.test')
@@ -58,12 +58,14 @@ db.OrderDetail.belongsTo(db.Dish, {
 });
 
 // Sync database
+const logger = require('../utils/logger'); // Import the logger
+
 const syncDatabase = async (force = false) => {
     try {
         await db.sequelize.sync({ force: force });
-        console.log(`Base de datos sincronizada correctamente (force: ${force}).`);
+        logger.info(`Base de datos sincronizada correctamente (force: ${force}).`);
     } catch (error) {
-        console.error('Error al sincronizar la base de datos:', error);
+        logger.error(`Error al sincronizar la base de datos: ${error.message}`, { stack: error.stack });
     }
 };
 

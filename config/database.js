@@ -1,4 +1,6 @@
 const { Sequelize } = require('sequelize');
+const logger = require('../utils/logger'); // Import the logger
+require('dotenv').config(); // Ensure environment variables are loaded
 
 const sequelize = new Sequelize(
     process.env.DB_NAME,
@@ -21,9 +23,11 @@ const sequelize = new Sequelize(
 const testConnection = async () => {
     try {
         await sequelize.authenticate();
-        console.log('Conexión a la base de datos establecida correctamente.');
+        logger.info('Conexión a la base de datos establecida correctamente.');
     } catch (error) {
-        console.error('Error al conectar con la base de datos:', error);
+        logger.error(`Error al conectar con la base de datos: ${error.message}`, { stack: error.stack });
+        // Optionally, exit the process if DB connection is critical for app startup
+        // process.exit(1);
     }
 };
 

@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const AppError = require('../utils/AppError'); // Import AppError
 require('dotenv').config();
 
 const authenticateToken = (req, res, next) => {
@@ -6,12 +7,12 @@ const authenticateToken = (req, res, next) => {
     const token = authHeader && authHeader.split(' ')[1];
 
     if (!token) {
-        return res.status(401).json({ message: 'Token de acceso requerido' });
+        return next(new AppError('Token de acceso requerido', 401));
     }
 
     jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key', (err, user) => {
         if (err) {
-            return res.status(403).json({ message: 'Token inválido' });
+            return next(new AppError('Token inválido', 403));
         }
         req.user = user;
         next();
@@ -21,11 +22,12 @@ const authenticateToken = (req, res, next) => {
 const authorizeRoles = (...roles) => {
     return (req, res, next) => {
         if (!req.user) {
-            return res.status(401).json({ message: 'Usuario no autenticado' });
+            // This case should ideally be caught by authenticateToken first
+            return next(new AppError('Usuario no autenticado', 401));
         }
 
         if (!roles.includes(req.user.rol)) {
-            return res.status(403).json({ message: 'Acceso denegado: rol insuficiente' });
+            return next(new AppError('Acceso denegado: rol insuficiente', 403));
         }
 
         next();

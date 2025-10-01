@@ -277,18 +277,6 @@ const createOrder = async (req, res, next) => {
     try {
         const { id_mesa, detalles, estado = 'pendiente' } = req.body;
 
-        // Validar que la mesa y los detalles del pedido estén presentes
-        if (!id_mesa || !detalles || detalles.length === 0) {
-            logger.warn('Intento de crear pedido con campos incompletos.');
-            return next(new AppError('Mesa y detalles del pedido son requeridos', 400));
-        }
-
-        // Validar estado
-        if (!['borrador', 'pendiente', 'en preparación', 'servido'].includes(estado)) {
-            logger.warn(`Estado inválido: ${estado}`);
-            return next(new AppError('Estado inválido', 400));
-        }
-
         // Verificar que la mesa existe
         const table = await Table.findByPk(id_mesa, { transaction });
         if (!table) {
@@ -361,7 +349,7 @@ const createOrder = async (req, res, next) => {
         });
     } catch (error) {
         await transaction.rollback();
-        logger.error(`Error al eliminar pedido con ID ${req.params.id}: ${error.message}`, { stack: error.stack });
+        logger.error(`Error al crear pedido: ${error.message}`, { stack: error.stack });
         next(error);
     }
 };
@@ -421,12 +409,6 @@ const updateOrder = async (req, res, next) => {
     try {
         const { id } = req.params;
         const { detalles } = req.body;
-
-        // Validar detalles
-        if (!detalles || detalles.length === 0) {
-            logger.warn('Intento de actualizar pedido con detalles vacíos.');
-            return next(new AppError('Detalles del pedido son requeridos', 400));
-        }
 
         // Condición para asegurar que un mesero solo pueda actualizar sus propios pedidos
         const whereCondition = req.user.rol === 'mesero'
@@ -537,12 +519,6 @@ const updateOrderStatus = async (req, res, next) => {
     try {
         const { id } = req.params;
         const { estado } = req.body;
-
-        // Validar que el estado proporcionado sea uno de los valores permitidos
-        if (!['borrador', 'pendiente', 'en preparación', 'servido'].includes(estado)) {
-            logger.warn(`Intento de actualizar pedido ${id} con estado inválido: ${estado}`);
-            return next(new AppError('Estado inválido', 400));
-        }
 
         // Condición para asegurar que un mesero solo pueda actualizar sus propios pedidos
         const whereCondition = req.user.rol === 'mesero'

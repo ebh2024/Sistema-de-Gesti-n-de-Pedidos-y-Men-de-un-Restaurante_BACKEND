@@ -1,23 +1,12 @@
-const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const nodemailer = require('nodemailer');
 const { validationResult } = require('express-validator');
 const { User } = require('../models');
 const AppError = require('../utils/AppError');
 const logger = require('../utils/logger');
+const { sendEmail } = require('../utils/emailService');
 require('dotenv').config();
-
-/**
- * Configuración del transportador de correo para el envío de emails.
- * Utiliza el servicio de Gmail y las credenciales definidas en las variables de entorno.
- */
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-    }
-});
+// No longer need bcrypt here as hashing is handled by model hooks
+const bcrypt = require('bcryptjs'); // Keep bcrypt for password comparison in login
 
 /**
  * @swagger
@@ -103,14 +92,11 @@ const register = async (req, res, next) => {
             return next(new AppError('El correo ya está registrado', 400));
         }
 
-        // Hashear la contraseña antes de almacenarla en la base de datos
-        const hashedPassword = await bcrypt.hash(contraseña, 10);
-
-        // Crear el nuevo usuario en la base de datos
+        // Crear el nuevo usuario en la base de datos (password will be hashed by model hook)
         const user = await User.create({
             nombre,
             correo,
-            contraseña: hashedPassword,
+            contraseña, // Password will be hashed by model hook
             rol
         });
 
@@ -312,7 +298,7 @@ const forgotPassword = async (req, res, next) => {
             subject: 'Restablecimiento de Contraseña',
             html: `<p>Haz clic en el siguiente enlace para restablecer tu contraseña: <a href="${process.env.CLIENT_URL}/reset-password?token=${resetToken}">Restablecer Contraseña</a></p>`
         };
-        await transporter.sendMail(mailOptions);
+        await sendEmail(mailOptions);
 
         logger.info(`Generado token de reseteo para ${user.correo}. Email de reseteo enviado.`);
         res.json({ message: 'Instrucciones de reset enviadas al correo' });
@@ -375,14 +361,15 @@ const resetPassword = async (req, res, next) => {
         // Verificar y decodificar el token JWT
         const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key');
 
-        // Hashear la nueva contraseña
-        const hashedPassword = await bcrypt.hash(nuevaContraseña, 10);
-
-        // Actualizar la contraseña del usuario en la base de datos
-        await User.update(
-            { contraseña: hashedPassword },
-            { where: { id: decoded.id } }
-        );
+        // Actualizar la contraseña del usuario en la base de datos (password will be hashed by model hook)
+        // Find the user first to trigger the beforeUpdate hook
+        const user = await User.findByPk(decoded.id);
+        if (!user) {
+            logger.warn(`Intento de restablecimiento de contraseña para usuario no encontrado: ID ${decoded.id}`);
+            return next(new AppError('Usuario no encontrado', 404));
+        }
+        user.contraseña = nuevaContraseña; // Assign new password, hook will hash it
+        await user.save();
 
         logger.info(`Contraseña actualizada para el usuario ID: ${decoded.id}`);
         res.json({ message: 'Contraseña actualizada exitosamente' });

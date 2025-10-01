@@ -1,14 +1,15 @@
 const { Sequelize } = require('sequelize');
+const logger = require('../utils/logger'); // Import the logger
 require('dotenv').config({ path: '.env.test' }); // Load test environment variables
 
 const sequelize = new Sequelize(
     process.env.TEST_DB_NAME || 'restaurant_management_test',
     process.env.TEST_DB_USER || 'usuario',
-    process.env.TEST_DB_PASSWORD || '',
+    process.env.DB_PASSWORD || '', // Use DB_PASSWORD for consistency, or TEST_DB_PASSWORD
     {
         host: process.env.TEST_DB_HOST || 'localhost',
         dialect: 'mysql',
-        logging: console.log, // Enable logging for debugging
+        logging: false, // Disable logging for cleaner test output, or use logger.debug
         pool: {
             max: 10,
             min: 0,
@@ -22,9 +23,9 @@ const sequelize = new Sequelize(
 const testConnection = async () => {
     try {
         await sequelize.authenticate();
-        console.log('Conexión a la base de datos de prueba establecida correctamente.');
+        logger.info('Conexión a la base de datos de prueba establecida correctamente.');
     } catch (error) {
-        console.error('Error al conectar con la base de datos de prueba:', error);
+        logger.error(`Error al conectar con la base de datos de prueba: ${error.message}`, { stack: error.stack });
     }
 };
 

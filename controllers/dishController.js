@@ -4,6 +4,38 @@ const logger = require('../utils/logger');
 
 /**
  * @swagger
+ * /api/dishes/public:
+ *   get:
+ *     summary: Obtiene todos los platos disponibles para el menú público.
+ *     tags: [Dishes]
+ *     responses:
+ *       200:
+ *         description: Lista de platos disponibles.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Dish'
+ *       500:
+ *         description: Error interno del servidor.
+ */
+const getAvailableDishes = async (req, res, next) => {
+    try {
+        const dishes = await Dish.findAll({
+            where: { disponibilidad: 1 }, // Only available dishes
+            order: [['created_at', 'DESC']] // Ordenar por fecha de creación descendente
+        });
+        logger.info('Se obtuvieron los platos disponibles para el menú público exitosamente.');
+        res.json(dishes);
+    } catch (error) {
+        logger.error(`Error al obtener platos disponibles para menú público: ${error.message}`, { stack: error.stack });
+        next(error);
+    }
+};
+
+/**
+ * @swagger
  * /api/dishes:
  *   get:
  *     summary: Obtiene todos los platos disponibles.
@@ -127,12 +159,6 @@ const getDishById = async (req, res, next) => {
 const createDish = async (req, res, next) => {
     try {
         const { nombre, descripcion, precio, disponibilidad } = req.body;
-
-        // Validar que nombre y precio estén presentes
-        if (!nombre || !precio) {
-            logger.warn('Intento de crear plato con campos incompletos.');
-            return next(new AppError('Nombre y precio son requeridos', 400));
-        }
 
         // Crear el nuevo plato en la base de datos
         const dish = await Dish.create({
@@ -262,6 +288,7 @@ const deleteDish = async (req, res, next) => {
 };
 
 module.exports = {
+    getAvailableDishes,
     getAllDishes,
     getDishById,
     createDish,

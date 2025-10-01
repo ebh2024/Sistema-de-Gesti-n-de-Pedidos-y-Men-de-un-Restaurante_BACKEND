@@ -1,6 +1,7 @@
 const AppError = require('../utils/AppError');
-const { validationResult } = require('express-validator');
 const logger = require('../utils/logger'); // Importar el logger
+const { validationResult } = require('express-validator'); // Keep for handleValidationErrors
+// Removed UniqueConstraintError as it's not directly used in the error handling logic
 
 const handleValidationErrors = (req, res, next) => {
     const errors = validationResult(req);
@@ -16,9 +17,10 @@ const handleCastErrorDB = err => {
     return new AppError(message, 400);
 };
 
-const handleDuplicateFieldsDB = err => {
-    const value = err.keyValue.name;
-    const message = `Duplicate field value: "${value}". Please use another value.`;
+const handleUniqueConstraintErrorDB = err => {
+    const field = Object.keys(err.fields)[0];
+    const value = err.fields[field];
+    const message = `El valor '${value}' para el campo '${field}' ya existe. Por favor, use otro valor.`;
     return new AppError(message, 400);
 };
 
@@ -67,14 +69,12 @@ module.exports = (err, req, res, next) => {
         sendErrorDev(err, res);
     } else if (process.env.NODE_ENV === 'production') {
         let error = { ...err };
-        error.message = err.message;
+        error.message = err.message; // Ensure message is copied
 
         if (error.name === 'CastError') error = handleCastErrorDB(error);
-        if (error.code === 11000) error = handleDuplicateFieldsDB(error);
-        if (error.name === 'ValidationError')
-            error = handleValidationErrorDB(error);
-        // No need to explicitly handle express-validator errors here, as handleValidationErrors
-        // will catch them before they reach this point and convert them to AppError instances.
+        if (error.name === 'SequelizeUniqueConstraintError') error = handleUniqueConstraintErrorDB(error);
+        if (error.name === 'SequelizeValidationError') error = handleValidationErrorDB(error); // Sequelize validation errors
+        // Note: express-validator errors are handled by handleValidationErrors middleware before reaching here.
 
         sendErrorProd(error, res);
     }

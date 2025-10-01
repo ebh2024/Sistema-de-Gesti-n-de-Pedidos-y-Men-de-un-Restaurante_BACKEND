@@ -1,10 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/authController');
-const { registerValidation, loginValidation } = require('../middlewares/validation/authValidation');
+const { registerValidation, loginValidation, forgotPasswordValidation, resetPasswordValidation } = require('../middlewares/validation/authValidation');
 const rateLimit = require('express-rate-limit');
 const logger = require('../utils/logger');
 const AppError = require('../utils/AppError');
+const { handleValidationErrors } = require('../middlewares/errorHandler'); // Import handleValidationErrors
 
 /**
  * Configuración de rate limiting para rutas de autenticación.
@@ -65,9 +66,9 @@ const authLimiter = rateLimit({
  *         description: Demasiados intentos de registro
  */
 if (process.env.NODE_ENV !== 'test') {
-    router.post('/register', authLimiter, registerValidation, authController.register);
+    router.post('/register', authLimiter, registerValidation, handleValidationErrors, authController.register);
 } else {
-    router.post('/register', registerValidation, authController.register);
+    router.post('/register', registerValidation, handleValidationErrors, authController.register);
 }
 
 /**
@@ -111,9 +112,9 @@ if (process.env.NODE_ENV !== 'test') {
  *         description: Demasiados intentos de inicio de sesión
  */
 if (process.env.NODE_ENV !== 'test') {
-    router.post('/login', authLimiter, loginValidation, authController.login);
+    router.post('/login', authLimiter, loginValidation, handleValidationErrors, authController.login);
 } else {
-    router.post('/login', loginValidation, authController.login);
+    router.post('/login', loginValidation, handleValidationErrors, authController.login);
 }
 
 /**
@@ -144,9 +145,9 @@ if (process.env.NODE_ENV !== 'test') {
  *         description: Demasiadas solicitudes de restablecimiento de contraseña
  */
 if (process.env.NODE_ENV !== 'test') {
-    router.post('/forgot-password', authLimiter, authController.forgotPassword);
+    router.post('/forgot-password', authLimiter, forgotPasswordValidation, handleValidationErrors, authController.forgotPassword);
 } else {
-    router.post('/forgot-password', authController.forgotPassword);
+    router.post('/forgot-password', forgotPasswordValidation, handleValidationErrors, authController.forgotPassword);
 }
 
 /**
@@ -181,9 +182,9 @@ if (process.env.NODE_ENV !== 'test') {
  *         description: Demasiadas solicitudes de restablecimiento de contraseña
  */
 if (process.env.NODE_ENV !== 'test') {
-    router.post('/reset-password', authLimiter, authController.resetPassword);
+    router.post('/reset-password', authLimiter, resetPasswordValidation, handleValidationErrors, authController.resetPassword);
 } else {
-    router.post('/reset-password', authController.resetPassword);
+    router.post('/reset-password', resetPasswordValidation, handleValidationErrors, authController.resetPassword);
 }
 
 module.exports = router;

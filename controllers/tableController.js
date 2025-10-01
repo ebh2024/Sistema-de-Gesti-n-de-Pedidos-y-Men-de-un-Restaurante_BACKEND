@@ -131,12 +131,6 @@ const createTable = async (req, res, next) => {
     try {
         const { numero, capacidad, estado } = req.body;
 
-        // Validar que número y capacidad estén presentes
-        if (!numero || !capacidad) {
-            logger.warn('Intento de crear mesa con campos incompletos.');
-            return next(new AppError('Número y capacidad son requeridos', 400));
-        }
-
         // Verificar si ya existe una mesa con el número proporcionado
         const existingTable = await Table.findOne({ where: { numero } });
         if (existingTable) {

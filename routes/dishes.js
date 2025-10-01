@@ -5,7 +5,10 @@ const { authenticateToken, authorizeRoles } = require('../middlewares/auth');
 const { createDishValidation, updateDishValidation, dishIdValidation } = require('../middlewares/validation/dishValidation');
 const { handleValidationErrors } = require('../middlewares/errorHandler');
 
-// Todas las rutas requieren autenticación
+// Rutas públicas (no requieren autenticación)
+router.get('/public', dishController.getAvailableDishes);
+
+// Todas las demás rutas requieren autenticación
 router.use(authenticateToken);
 
 // Rutas para todos los usuarios autenticados

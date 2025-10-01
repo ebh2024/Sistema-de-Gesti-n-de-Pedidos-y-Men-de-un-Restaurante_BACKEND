@@ -1,5 +1,3 @@
-const bcrypt = require('bcryptjs');
-const { validationResult } = require('express-validator');
 const { User } = require('../models');
 const AppError = require('../utils/AppError');
 const logger = require('../utils/logger');
@@ -50,12 +48,6 @@ const logger = require('../utils/logger');
  */
 const createUser = async (req, res, next) => {
     try {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            logger.warn('Errores de validación en creación de usuario:', errors.array());
-            return next(new AppError('Datos de entrada inválidos', 400));
-        }
-
         const { nombre, correo, contraseña, rol } = req.body;
 
         // Verificar si ya existe un usuario con el correo
@@ -65,14 +57,11 @@ const createUser = async (req, res, next) => {
             return next(new AppError('El correo ya está registrado', 400));
         }
 
-        // Hashear la contraseña
-        const hashedPassword = await bcrypt.hash(contraseña, 10);
-
-        // Crear el usuario
+        // Crear el usuario (password will be hashed by model hook)
         const user = await User.create({
             nombre,
             correo,
-            contraseña: hashedPassword,
+            contraseña, // Password will be hashed by model hook
             rol
         });
 
@@ -174,12 +163,6 @@ const getUsers = async (req, res, next) => {
  */
 const updateUser = async (req, res, next) => {
     try {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            logger.warn('Errores de validación en actualización de usuario:', errors.array());
-            return next(new AppError('Datos de entrada inválidos', 400));
-        }
-
         const { id } = req.params;
         const { nombre, correo, rol, is_active } = req.body;
 
