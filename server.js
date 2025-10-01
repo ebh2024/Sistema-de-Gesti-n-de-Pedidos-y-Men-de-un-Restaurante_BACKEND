@@ -3,6 +3,7 @@ const cors = require('cors');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 const swaggerUi = require('swagger-ui-express');
+const helmet = require('helmet');
 const YAML = require('yamljs');
 require('dotenv').config(); // Load default .env first
 
@@ -56,6 +57,9 @@ const limiter = rateLimit({
 if (process.env.NODE_ENV !== 'test') {
     app.use(limiter); // Aplicar el rate limiting a todas las solicitudes
 }
+
+// Usar Helmet para establecer cabeceras de seguridad HTTP
+app.use(helmet());
 
 /**
  * Configuración de CORS (Cross-Origin Resource Sharing).
