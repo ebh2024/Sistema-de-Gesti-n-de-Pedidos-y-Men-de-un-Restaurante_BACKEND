@@ -1,4 +1,5 @@
 const winston = require('winston');
+require('winston-daily-rotate-file');
 require('dotenv').config(); // Ensure environment variables are loaded
 
 const logger = winston.createLogger({
@@ -18,8 +19,21 @@ const logger = winston.createLogger({
         )
       )
     }),
-    new winston.transports.File({ filename: 'error.log', level: 'error' }),
-    new winston.transports.File({ filename: 'combined.log' })
+    new winston.transports.DailyRotateFile({
+      filename: 'logs/error-%DATE%.log',
+      datePattern: 'YYYY-MM-DD',
+      zippedArchive: true,
+      maxSize: '20m',
+      maxFiles: '14d',
+      level: 'error'
+    }),
+    new winston.transports.DailyRotateFile({
+      filename: 'logs/combined-%DATE%.log',
+      datePattern: 'YYYY-MM-DD',
+      zippedArchive: true,
+      maxSize: '20m',
+      maxFiles: '14d'
+    })
   ]
 });
 
