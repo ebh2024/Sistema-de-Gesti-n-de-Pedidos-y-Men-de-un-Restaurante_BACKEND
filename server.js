@@ -12,15 +12,22 @@ if (process.env.NODE_ENV === 'test') {
     require('dotenv').config({ path: '.env.test', override: true });
 }
 
+// Verificación de la variable de entorno JWT_SECRET
+if (!process.env.JWT_SECRET) {
+    const errorMessage = 'FATAL ERROR: JWT_SECRET no está definido.';
+    if (process.env.NODE_ENV === 'production') {
+        logger.error(errorMessage + ' La aplicación no puede ejecutarse en producción sin un secreto JWT.');
+        process.exit(1); // Salir de la aplicación en producción
+    } else {
+        logger.warn(errorMessage + ' Se utilizará un valor por defecto para desarrollo/pruebas.');
+        // Opcional: Asignar un valor por defecto para desarrollo si es absolutamente necesario
+        process.env.JWT_SECRET = 'supersecretdevkey'; 
+    }
+}
+
 // Inicializar la aplicación Express
 const app = express();
 const PORT = process.env.PORT || 3000;
-
-// Importar modelos y establecer asociaciones de la base de datos
-// Solo importar y sincronizar modelos si no estamos en el entorno de prueba
-if (process.env.NODE_ENV !== 'test') {
-    require('./models');
-}
 
 // Importar el logger para el registro de eventos
 const logger = require('./utils/logger');
@@ -28,6 +35,12 @@ const logger = require('./utils/logger');
 const AppError = require('./utils/AppError');
 // Importar el middleware global de manejo de errores
 const globalErrorHandler = require('./middlewares/errorHandler');
+
+// Importar modelos y establecer asociaciones de la base de datos
+// Solo importar y sincronizar modelos si no estamos en el entorno de prueba
+if (process.env.NODE_ENV !== 'test') {
+    require('./models');
+}
 
 /**
  * Configuración de rate limiting global para la API.
