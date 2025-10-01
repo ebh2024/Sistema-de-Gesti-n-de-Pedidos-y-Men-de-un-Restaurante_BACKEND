@@ -3,7 +3,7 @@ const { validationResult } = require('express-validator');
 const { User } = require('../models');
 const AppError = require('../utils/AppError');
 const logger = require('../utils/logger');
-const { sendEmail } = require('../utils/emailService');
+const { sendEmail } = process.env.NODE_ENV === 'test' ? require('../tests/__mocks__/emailService') : require('../utils/emailService');
 require('dotenv').config();
 // No longer need bcrypt here as hashing is handled by model hooks
 const bcrypt = require('bcryptjs'); // Keep bcrypt for password comparison in login
