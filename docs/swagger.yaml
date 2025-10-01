@@ -1,0 +1,711 @@
+openapi: 3.0.0
+info:
+  title: Restaurant Order Management API
+  version: 1.0.0
+  description: API for managing restaurant orders, dishes, tables, and users.
+servers:
+  - url: http://localhost:3000/api
+    description: Local Development Server
+tags:
+  - name: Authentication
+    description: User authentication and authorization
+  - name: Users
+    description: Operations related to users
+  - name: Dishes
+    description: Operations related to dishes
+  - name: Tables
+    description: Operations related to tables
+  - name: Orders
+    description: Operations related to orders
+paths:
+  /auth/register:
+    post:
+      summary: Register a new user
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nombre:
+                  type: string
+                  example: John Doe
+                correo:
+                  type: string
+                  format: email
+                  example: john.doe@example.com
+                contraseña:
+                  type: string
+                  format: password
+                  example: password123
+                rol:
+                  type: string
+                  enum: [admin, cocinero, mesero]
+                  example: mesero
+              required:
+                - nombre
+                - correo
+                - contraseña
+                - rol
+      responses:
+        '201':
+          description: User registered successfully
+        '400':
+          description: Invalid input
+  /auth/login:
+    post:
+      summary: Log in a user
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                correo:
+                  type: string
+                  format: email
+                  example: john.doe@example.com
+                contraseña:
+                  type: string
+                  format: password
+                  example: password123
+              required:
+                - correo
+                - contraseña
+      responses:
+        '200':
+          description: User logged in successfully
+        '401':
+          description: Invalid credentials
+  /users:
+    post:
+      summary: Crear un nuevo usuario
+      tags: [Users]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - nombre
+                - correo
+                - contraseña
+                - rol
+              properties:
+                nombre:
+                  type: string
+                  description: Nombre completo del usuario
+                correo:
+                  type: string
+                  format: email
+                  description: Correo electrónico único
+                contraseña:
+                  type: string
+                  format: password
+                  description: Contraseña (mínimo 6 caracteres)
+                rol:
+                  type: string
+                  enum: [admin, cocinero, mesero]
+                  description: Rol del usuario
+      responses:
+        '201':
+          description: Usuario creado exitosamente
+        '400':
+          description: Datos inválidos
+        '403':
+          description: Acceso denegado
+    get:
+      summary: Obtener lista de usuarios
+      tags: [Users]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Lista de usuarios obtenida exitosamente
+        '403':
+          description: Acceso denegado
+  /users/{id}:
+    put:
+      summary: Actualizar un usuario
+      tags: [Users]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID del usuario
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nombre:
+                  type: string
+                  description: Nombre completo del usuario
+                correo:
+                  type: string
+                  format: email
+                  description: Correo electrónico único
+                rol:
+                  type: string
+                  enum: [admin, cocinero, mesero]
+                  description: Rol del usuario
+                is_active:
+                  type: boolean
+                  description: Estado activo del usuario
+      responses:
+        '200':
+          description: Usuario actualizado exitosamente
+        '400':
+          description: Datos inválidos
+        '403':
+          description: Acceso denegado
+        '404':
+          description: Usuario no encontrado
+    delete:
+      summary: Eliminar un usuario
+      tags: [Users]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID del usuario
+      responses:
+        '200':
+          description: Usuario eliminado exitosamente
+        '403':
+          description: Acceso denegado
+        '404':
+          description: Usuario no encontrado
+  /dishes/public:
+    get:
+      summary: Obtener platos disponibles públicamente
+      tags: [Dishes]
+      responses:
+        '200':
+          description: Lista de platos disponibles
+  /dishes:
+    get:
+      summary: Obtener todos los platos (requiere autenticación)
+      tags: [Dishes]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Lista de todos los platos
+    post:
+      summary: Crear un nuevo plato (solo admin)
+      tags: [Dishes]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - nombre
+                - precio
+                - disponibilidad
+              properties:
+                nombre:
+                  type: string
+                  example: Pizza Margherita
+                descripcion:
+                  type: string
+                  example: Tomate, mozzarella y albahaca
+                precio:
+                  type: number
+                  format: float
+                  example: 12.50
+                disponibilidad:
+                  type: integer
+                  enum: [0, 1]
+                  example: 1
+      responses:
+        '201':
+          description: Plato creado exitosamente
+        '400':
+          description: Datos inválidos
+        '403':
+          description: Acceso denegado
+  /dishes/{id}:
+    get:
+      summary: Obtener un plato por ID
+      tags: [Dishes]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID del plato
+      responses:
+        '200':
+          description: Detalles del plato
+        '404':
+          description: Plato no encontrado
+    put:
+      summary: Actualizar un plato (solo admin)
+      tags: [Dishes]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID del plato
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nombre:
+                  type: string
+                  example: Pizza Cuatro Quesos
+                descripcion:
+                  type: string
+                  example: Mozzarella, gorgonzola, parmesano y provolone
+                precio:
+                  type: number
+                  format: float
+                  example: 14.00
+                disponibilidad:
+                  type: integer
+                  enum: [0, 1]
+                  example: 0
+      responses:
+        '200':
+          description: Plato actualizado exitosamente
+        '400':
+          description: Datos inválidos
+        '403':
+          description: Acceso denegado
+        '404':
+          description: Plato no encontrado
+    delete:
+      summary: Eliminar un plato (solo admin)
+      tags: [Dishes]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID del plato
+      responses:
+        '200':
+          description: Plato eliminado exitosamente
+        '403':
+          description: Acceso denegado
+        '404':
+          description: Plato no encontrado
+  /tables:
+    get:
+      summary: Obtener todas las mesas
+      tags: [Tables]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Lista de mesas obtenida exitosamente
+        '403':
+          description: Acceso denegado
+    post:
+      summary: Crear una nueva mesa (solo admin)
+      tags: [Tables]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - numero
+                - capacidad
+              properties:
+                numero:
+                  type: integer
+                  example: 1
+                capacidad:
+                  type: integer
+                  example: 4
+                estado:
+                  type: string
+                  enum: [available, occupied, cleaning]
+                  example: available
+      responses:
+        '201':
+          description: Mesa creada exitosamente
+        '400':
+          description: Datos inválidos
+        '403':
+          description: Acceso denegado
+  /tables/{id}:
+    get:
+      summary: Obtener una mesa por ID
+      tags: [Tables]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID de la mesa
+      responses:
+        '200':
+          description: Detalles de la mesa
+        '404':
+          description: Mesa no encontrada
+    put:
+      summary: Actualizar una mesa (solo admin)
+      tags: [Tables]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID de la mesa
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                numero:
+                  type: integer
+                  example: 2
+                capacidad:
+                  type: integer
+                  example: 6
+                estado:
+                  type: string
+                  enum: [available, occupied, cleaning]
+                  example: occupied
+      responses:
+        '200':
+          description: Mesa actualizada exitosamente
+        '400':
+          description: Datos inválidos
+        '403':
+          description: Acceso denegado
+        '404':
+          description: Mesa no encontrada
+    delete:
+      summary: Eliminar una mesa (solo admin)
+      tags: [Tables]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID de la mesa
+      responses:
+        '200':
+          description: Mesa eliminada exitosamente
+        '403':
+          description: Acceso denegado
+        '404':
+          description: Mesa no encontrada
+  /orders:
+    get:
+      summary: Obtener todos los pedidos
+      tags: [Orders]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Lista de pedidos obtenida exitosamente
+        '403':
+          description: Acceso denegado
+    post:
+      summary: Crear un nuevo pedido (mesero, admin)
+      tags: [Orders]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - id_mesa
+                - detalles
+              properties:
+                id_mesa:
+                  type: integer
+                  example: 1
+                detalles:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/OrderDetailInput'
+                estado:
+                  type: string
+                  enum: [borrador, pendiente, en preparación, servido]
+                  example: pendiente
+      responses:
+        '201':
+          description: Pedido creado exitosamente
+        '400':
+          description: Datos inválidos
+        '403':
+          description: Acceso denegado
+  /orders/{id}:
+    get:
+      summary: Obtener un pedido por ID
+      tags: [Orders]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID del pedido
+      responses:
+        '200':
+          description: Detalles del pedido
+        '404':
+          description: Pedido no encontrado
+    put:
+      summary: Actualizar un pedido (mesero, admin)
+      tags: [Orders]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID del pedido
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                detalles:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/OrderDetailInput'
+                estado:
+                  type: string
+                  enum: [borrador, pendiente, en preparación, servido]
+                  example: en preparación
+      responses:
+        '200':
+          description: Pedido actualizado exitosamente
+        '400':
+          description: Datos inválidos
+        '403':
+          description: Acceso denegado
+        '404':
+          description: Pedido no encontrado
+    delete:
+      summary: Eliminar un pedido (solo admin)
+      tags: [Orders]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID del pedido
+      responses:
+        '200':
+          description: Pedido eliminado exitosamente
+        '403':
+          description: Acceso denegado
+        '404':
+          description: Pedido no encontrado
+  /orders/{id}/status:
+    put:
+      summary: Actualizar el estado de un pedido (mesero, admin, cocinero)
+      tags: [Orders]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID del pedido
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - estado
+              properties:
+                estado:
+                  type: string
+                  enum: [borrador, pendiente, en preparación, servido]
+                  example: servido
+      responses:
+        '200':
+          description: Estado del pedido actualizado exitosamente
+        '400':
+          description: Datos inválidos
+        '403':
+          description: Acceso denegado
+        '404':
+          description: Pedido no encontrado
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        nombre:
+          type: string
+        correo:
+          type: string
+        rol:
+          type: string
+          enum: [admin, cocinero, mesero]
+        is_active:
+          type: boolean
+          description: Indica si el usuario está activo o inactivo.
+    Dish:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        nombre:
+          type: string
+        descripcion:
+          type: string
+        precio:
+          type: number
+          format: float
+        disponibilidad:
+          type: integer
+          enum: [0, 1]
+    Table:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        numero:
+          type: integer
+        capacidad:
+          type: integer
+        estado:
+          type: string
+          enum: [available, occupied, cleaning]
+          example: available
+    Order:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        id_mesa:
+          type: integer
+        id_mesero:
+          type: integer
+        estado:
+          type: string
+          enum: [borrador, pendiente, en preparación, servido]
+          example: pendiente
+        total:
+          type: number
+          format: float
+          example: 0.00
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    OrderDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        id_pedido:
+          type: integer
+        id_plato:
+          type: integer
+        cantidad:
+          type: integer
+        precio_unitario:
+          type: number
+          format: float
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    OrderDetailInput:
+      type: object
+      required:
+        - id_plato
+        - cantidad
+      properties:
+        id_plato:
+          type: integer
+          example: 1
+        cantidad:
+          type: integer
+          example: 2
+security:
+  - bearerAuth: []

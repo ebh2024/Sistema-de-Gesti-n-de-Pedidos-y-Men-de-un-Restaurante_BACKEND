@@ -2,6 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
+const swaggerUi = require('swagger-ui-express');
+const YAML = require('yamljs');
 require('dotenv').config(); // Load default .env first
 
 // Ensure NODE_ENV is set, default to 'development'
@@ -99,6 +101,12 @@ app.use('/api/dishes', dishRoutes);
 app.use('/api/tables', tableRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/users', userRoutes);
+
+// Cargar el archivo de definición de Swagger
+const swaggerDocument = YAML.load('./docs/swagger.yaml');
+
+// Servir la documentación de Swagger UI
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 /**
  * @swagger
