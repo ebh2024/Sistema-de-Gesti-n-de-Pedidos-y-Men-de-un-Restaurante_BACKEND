@@ -19,6 +19,7 @@ module.exports = (sequelize) => {
             type: DataTypes.DECIMAL(10, 2),
             allowNull: false,
             validate: {
+                isFloat: true, // Ensure the price is a float
                 min: 0.01
             }
         },

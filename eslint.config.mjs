@@ -10,7 +10,7 @@ export default [
         ...globals.mocha
       },
       ecmaVersion: 2022,
-      sourceType: "commonjs"
+      sourceType: "module"
     },
     rules: {
       ...js.configs.recommended.rules,
