@@ -11,7 +11,7 @@ process.env.JWT_SECRET = 'test-secret-key';
 chai.use(chaiHttp);
 const expect = chai.expect;
 
-describe('User API', () => {
+describe('API de Usuarios', () => {
     let adminUser, regularUser, adminToken, regularToken;
     const adminPassword = 'adminpassword123';
     const regularPassword = 'userpassword123';
@@ -47,8 +47,8 @@ describe('User API', () => {
         await sequelize.query('SET FOREIGN_KEY_CHECKS = 1', null, { raw: true });
     });
 
-    describe('User Model', () => {
-        it('should hash password before saving', async () => {
+    describe('Modelo de Usuario', () => {
+        it('debería hashear la contraseña antes de guardar', async () => {
             const user = await User.create({
                 nombre: 'Test Hash',
                 correo: 'hash@example.com',
@@ -59,7 +59,7 @@ describe('User API', () => {
             expect(bcrypt.compareSync('plainpassword', user.contraseña)).to.be.true;
         });
 
-        it('should not allow duplicate emails', async () => {
+        it('no debería permitir correos electrónicos duplicados', async () => {
             try {
                 await User.create({
                     nombre: 'Duplicate User',
@@ -67,13 +67,13 @@ describe('User API', () => {
                     contraseña: 'duplicatepassword',
                     rol: 'mesero'
                 });
-                expect.fail('Should not have created user with duplicate email');
+                expect.fail('No debería haber creado un usuario con correo electrónico duplicado');
             } catch (error) {
                 expect(error.name).to.equal('SequelizeUniqueConstraintError');
             }
         });
 
-        it('should not allow invalid roles', async () => {
+        it('no debería permitir roles inválidos', async () => {
             try {
                 await User.create({
                     nombre: 'Invalid Role',
@@ -81,18 +81,15 @@ describe('User API', () => {
                     contraseña: 'password',
                     rol: 'invalid'
                 });
-                expect.fail('Should not have created user with invalid role');
+                expect.fail('No debería haber creado un usuario con un rol inválido');
             } catch (error) {
             expect(error.name).to.equal('SequelizeDatabaseError');
-            // The actual error message from the DB might vary, but the error type is key
-            // For now, we'll just check the error type as the validation is at DB level for ENUM
-            // If a custom validation error message is desired, it should be handled in the model hooks or controller
             }
         });
     });
 
     describe('GET /api/users', () => {
-        it('should allow admin to get all users', (done) => {
+        it('debería permitir al administrador obtener todos los usuarios', (done) => {
             chai.request(app)
                 .get('/api/users')
                 .set('Authorization', `Bearer ${adminToken}`)
@@ -105,7 +102,7 @@ describe('User API', () => {
                 });
         });
 
-        it('should not allow regular user to get all users', (done) => {
+        it('no debería permitir a un usuario regular obtener todos los usuarios', (done) => {
             chai.request(app)
                 .get('/api/users')
                 .set('Authorization', `Bearer ${regularToken}`)
@@ -116,7 +113,7 @@ describe('User API', () => {
                 });
         });
 
-        it('should return 401 if no token is provided', (done) => {
+        it('debería devolver 401 si no se proporciona token', (done) => {
             chai.request(app)
                 .get('/api/users')
                 .end((err, res) => {
@@ -128,7 +125,7 @@ describe('User API', () => {
     });
 
     describe('GET /api/users/:id', () => {
-        it('should allow admin to get a user by ID', (done) => {
+        it('debería permitir al administrador obtener un usuario por ID', (done) => {
             chai.request(app)
                 .get(`/api/users/${regularUser.id}`)
                 .set('Authorization', `Bearer ${adminToken}`)
@@ -141,7 +138,7 @@ describe('User API', () => {
                 });
         });
 
-        it('should allow a regular user to get their own profile', (done) => {
+        it('debería permitir a un usuario regular obtener su propio perfil', (done) => {
             chai.request(app)
                 .get(`/api/users/${regularUser.id}`)
                 .set('Authorization', `Bearer ${regularToken}`)
@@ -154,7 +151,7 @@ describe('User API', () => {
                 });
         });
 
-        it('should not allow a regular user to get another user\'s profile', (done) => {
+        it('no debería permitir a un usuario regular obtener el perfil de otro usuario', (done) => {
             chai.request(app)
                 .get(`/api/users/${adminUser.id}`)
                 .set('Authorization', `Bearer ${regularToken}`)
@@ -165,7 +162,7 @@ describe('User API', () => {
                 });
         });
 
-        it('should return 404 if user not found', (done) => {
+        it('debería devolver 404 si el usuario no se encuentra', (done) => {
             chai.request(app)
                 .get('/api/users/99999')
                 .set('Authorization', `Bearer ${adminToken}`)
@@ -178,7 +175,7 @@ describe('User API', () => {
     });
 
     describe('PUT /api/users/:id', () => {
-        it('should allow admin to update a user', (done) => {
+        it('debería permitir al administrador actualizar un usuario', (done) => {
             chai.request(app)
                 .put(`/api/users/${regularUser.id}`)
                 .set('Authorization', `Bearer ${adminToken}`)
@@ -191,7 +188,7 @@ describe('User API', () => {
                 });
         });
 
-        it('should allow a regular user to update their own profile', (done) => {
+        it('debería permitir a un usuario regular actualizar su propio perfil', (done) => {
             chai.request(app)
                 .put(`/api/users/${regularUser.id}`)
                 .set('Authorization', `Bearer ${regularToken}`)
@@ -204,7 +201,7 @@ describe('User API', () => {
                 });
         });
 
-        it('should not allow a regular user to update another user\'s profile', (done) => {
+        it('no debería permitir a un usuario regular actualizar el perfil de otro usuario', (done) => {
             chai.request(app)
                 .put(`/api/users/${adminUser.id}`)
                 .set('Authorization', `Bearer ${regularToken}`)
@@ -216,7 +213,7 @@ describe('User API', () => {
                 });
         });
 
-        it('should return 404 if user to update not found', (done) => {
+        it('debería devolver 404 si el usuario a actualizar no se encuentra', (done) => {
             chai.request(app)
                 .put('/api/users/99999')
                 .set('Authorization', `Bearer ${adminToken}`)
@@ -228,7 +225,7 @@ describe('User API', () => {
                 });
         });
 
-        it('should not allow updating role to an invalid value', (done) => {
+        it('no debería permitir actualizar el rol a un valor inválido', (done) => {
             chai.request(app)
                 .put(`/api/users/${regularUser.id}`)
                 .set('Authorization', `Bearer ${adminToken}`)
@@ -242,18 +239,18 @@ describe('User API', () => {
     });
 
     describe('DELETE /api/users/:id', () => {
-        it('should allow admin to delete a user', (done) => {
+        it('debería permitir al administrador eliminar un usuario', (done) => {
             chai.request(app)
                 .delete(`/api/users/${regularUser.id}`)
                 .set('Authorization', `Bearer ${adminToken}`)
                 .end((err, res) => {
                     expect(res).to.have.status(204);
-                    expect(res.body).to.be.empty; // 204 No Content usually means an empty body
+                    expect(res.body).to.be.empty;
                     done();
                 });
         });
 
-        it('should not allow regular user to delete a user', (done) => {
+        it('no debería permitir a un usuario regular eliminar un usuario', (done) => {
             chai.request(app)
                 .delete(`/api/users/${adminUser.id}`)
                 .set('Authorization', `Bearer ${regularToken}`)
@@ -264,7 +261,7 @@ describe('User API', () => {
                 });
         });
 
-        it('should return 404 if user to delete not found', (done) => {
+        it('debería devolver 404 si el usuario a eliminar no se encuentra', (done) => {
             chai.request(app)
                 .delete('/api/users/99999')
                 .set('Authorization', `Bearer ${adminToken}`)

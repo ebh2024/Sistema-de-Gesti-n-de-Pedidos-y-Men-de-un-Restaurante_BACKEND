@@ -12,7 +12,7 @@ process.env.EMAIL_USER = 'test@example.com';
 chai.use(chaiHttp);
 const expect = chai.expect;
 
-describe('Auth API', () => {
+describe('API de Autenticación', () => {
     let testUser;
     let testUserPassword = 'testpassword123';
     let inactiveUser;
@@ -41,11 +41,11 @@ describe('Auth API', () => {
             });
 
         } catch (error) {
-            console.error('Error during test setup (before hook):', error);
+            console.error('Error durante la configuración de la prueba (hook before):', error);
             if (error.errors) {
-                error.errors.forEach(err => console.error('Validation error detail:', err.message, err.path, err.value));
+                error.errors.forEach(err => console.error('Detalle del error de validación:', err.message, err.path, err.value));
             }
-            throw error; // Volver a lanzar para que la prueba falle
+            throw error;
         }
     });
 
@@ -58,7 +58,7 @@ describe('Auth API', () => {
     });
 
     describe('GET /api/health', () => {
-        it('should return 200 and a success message', (done) => {
+        it('debería devolver 200 y un mensaje de éxito', (done) => {
             chai.request(app)
                 .get('/api/health')
                 .end((err, res) => {
@@ -72,7 +72,7 @@ describe('Auth API', () => {
     });
 
     describe('POST /api/auth/register', () => {
-        it('should register a new user successfully', (done) => {
+        it('debería registrar un nuevo usuario exitosamente', (done) => {
             chai.request(app)
                 .post('/api/auth/register')
                 .send({
@@ -90,7 +90,7 @@ describe('Auth API', () => {
                 });
         });
 
-        it('should return 400 if email already exists', (done) => {
+        it('debería devolver 400 si el correo ya existe', (done) => {
             chai.request(app)
                 .post('/api/auth/register')
                 .send({
@@ -107,7 +107,7 @@ describe('Auth API', () => {
                 });
         });
 
-        it('should return 400 if required fields are missing (contraseña)', (done) => {
+        it('debería devolver 400 si faltan campos requeridos (contraseña)', (done) => {
             chai.request(app)
                 .post('/api/auth/register')
                 .send({
@@ -123,7 +123,7 @@ describe('Auth API', () => {
                 });
         });
 
-        it('should return 400 if nombre is missing', (done) => {
+        it('debería devolver 400 si falta el nombre', (done) => {
             chai.request(app)
                 .post('/api/auth/register')
                 .send({
@@ -142,7 +142,7 @@ describe('Auth API', () => {
     });
 
     describe('POST /api/auth/login', () => {
-        it('should log in an existing user successfully', (done) => {
+        it('debería iniciar sesión de un usuario existente exitosamente', (done) => {
             chai.request(app)
                 .post('/api/auth/login')
                 .send({
@@ -160,7 +160,7 @@ describe('Auth API', () => {
                 });
         });
 
-        it('should return 401 for invalid credentials (wrong password)', (done) => {
+        it('debería devolver 401 para credenciales inválidas (contraseña incorrecta)', (done) => {
             chai.request(app)
                 .post('/api/auth/login')
                 .send({
@@ -175,7 +175,7 @@ describe('Auth API', () => {
                 });
         });
 
-        it('should return 401 for invalid credentials (user not found)', (done) => {
+        it('debería devolver 401 para credenciales inválidas (usuario no encontrado)', (done) => {
             chai.request(app)
                 .post('/api/auth/login')
                 .send({
@@ -190,7 +190,7 @@ describe('Auth API', () => {
                 });
         });
 
-        it('should return 401 for inactive user', (done) => {
+        it('debería devolver 401 para usuario inactivo', (done) => {
             chai.request(app)
                 .post('/api/auth/login')
                 .send({
@@ -205,7 +205,7 @@ describe('Auth API', () => {
                 });
         });
 
-        it('should return 400 if required fields are missing (contraseña)', (done) => {
+        it('debería devolver 400 si faltan campos requeridos (contraseña)', (done) => {
             chai.request(app)
                 .post('/api/auth/login')
                 .send({
@@ -221,7 +221,7 @@ describe('Auth API', () => {
     });
 
     describe('POST /api/auth/forgot-password', () => {
-        it('should send reset instructions if email exists', (done) => {
+        it('debería enviar instrucciones de restablecimiento si el correo existe', (done) => {
             chai.request(app)
                 .post('/api/auth/forgot-password')
                 .send({ correo: testUser.correo })
@@ -233,7 +233,7 @@ describe('Auth API', () => {
                 });
         });
 
-        it('should return 404 if email does not exist', (done) => {
+        it('debería devolver 404 si el correo no existe', (done) => {
             chai.request(app)
                 .post('/api/auth/forgot-password')
                 .send({ correo: 'nonexistent@example.com' })
@@ -245,7 +245,7 @@ describe('Auth API', () => {
                 });
         });
 
-        it('should return 400 if email is missing', (done) => {
+        it('debería devolver 400 si falta el correo', (done) => {
             chai.request(app)
                 .post('/api/auth/forgot-password')
                 .send({})
@@ -257,7 +257,7 @@ describe('Auth API', () => {
                 });
         });
 
-        it('should return 404 if user is inactive', (done) => {
+        it('debería devolver 404 si el usuario está inactivo', (done) => {
             chai.request(app)
                 .post('/api/auth/forgot-password')
                 .send({ correo: inactiveUser.correo })
@@ -281,7 +281,7 @@ describe('Auth API', () => {
             );
         });
 
-        it('should reset password successfully with a valid token', (done) => {
+        it('debería restablecer la contraseña exitosamente con un token válido', (done) => {
             chai.request(app)
                 .post('/api/auth/reset-password')
                 .send({
@@ -296,7 +296,7 @@ describe('Auth API', () => {
                 });
         });
 
-        it('should return 400 for an invalid token', (done) => {
+        it('debería devolver 400 para un token inválido', (done) => {
             chai.request(app)
                 .post('/api/auth/reset-password')
                 .send({
@@ -311,7 +311,7 @@ describe('Auth API', () => {
                 });
         });
 
-        it('should return 400 for an expired token', (done) => {
+        it('debería devolver 400 para un token expirado', (done) => {
             const expiredToken = jwt.sign(
                 { id: testUser.id, correo: testUser.correo },
                 process.env.JWT_SECRET,
@@ -334,7 +334,7 @@ describe('Auth API', () => {
             }, 100);
         });
 
-        it('should return 400 if token or nuevaContraseña is missing', (done) => {
+        it('debería devolver 400 si falta el token o la nuevaContraseña', (done) => {
             chai.request(app)
                 .post('/api/auth/reset-password')
                 .send({
@@ -348,7 +348,7 @@ describe('Auth API', () => {
                 });
         });
 
-        it('should return 400 if new password is too short', (done) => {
+        it('debería devolver 400 si la nueva contraseña es demasiado corta', (done) => {
             chai.request(app)
                 .post('/api/auth/reset-password')
                 .send({
