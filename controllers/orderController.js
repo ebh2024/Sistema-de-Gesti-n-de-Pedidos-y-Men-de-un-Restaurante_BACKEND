@@ -8,7 +8,7 @@ const logger = require('../utils/logger');
  *   get:
  *     summary: Obtiene todos los pedidos.
  *     description: Retorna una lista de todos los pedidos, con la opción de filtrar por mesero si el usuario es un mesero.
- *     tags: [Orders]
+ *     tags: [Pedidos]
  *     security:
  *       - bearerAuth: []
  *     responses:
@@ -57,7 +57,7 @@ const getAllOrders = async (req, res, next) => {
  *   get:
  *     summary: Obtiene un pedido por su ID.
  *     description: Retorna los detalles de un pedido específico, incluyendo la mesa, el mesero y los platos.
- *     tags: [Orders]
+ *     tags: [Pedidos]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -78,7 +78,7 @@ const getAllOrders = async (req, res, next) => {
  *                 id:
  *                   type: integer
  *                 estado:
- *                   type: string
+ *                     type: string
  *                 total:
  *                   type: number
  *                 created_at:
@@ -129,7 +129,7 @@ const getOrderById = async (req, res, next) => {
  *   post:
  *     summary: Crea un nuevo pedido.
  *     description: Crea un nuevo pedido para una mesa específica con una lista de platos.
- *     tags: [Orders]
+ *     tags: [Pedidos]
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -209,7 +209,7 @@ const createOrder = async (req, res, next) => {
  *   put:
  *     summary: Actualiza un pedido existente (solo para borradores).
  *     description: Permite actualizar los detalles de un pedido que esté en estado 'borrador'.
- *     tags: [Orders]
+ *     tags: [Pedidos]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -271,7 +271,7 @@ const updateOrder = async (req, res, next) => {
  *   patch:
  *     summary: Actualiza el estado de un pedido.
  *     description: Permite cambiar el estado de un pedido a 'pendiente', 'en preparación' o 'servido'. Si el estado es 'servido', la mesa asociada se marca como disponible.
- *     tags: [Orders]
+ *     tags: [Pedidos]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -323,7 +323,7 @@ const updateOrderStatus = async (req, res, next) => {
  *   delete:
  *     summary: Elimina un pedido por su ID.
  *     description: Elimina un pedido y sus detalles asociados. También libera la mesa si el pedido estaba asignado a una.
- *     tags: [Orders]
+ *     tags: [Pedidos]
  *     security:
  *       - bearerAuth: []
  *     parameters:

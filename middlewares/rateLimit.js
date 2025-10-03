@@ -2,20 +2,20 @@ const rateLimit = require('express-rate-limit');
 
 // Basic rate limiter for general requests
 const generalRateLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per windowMs
-  message: 'Too many requests from this IP, please try again after 15 minutes',
+  windowMs: 15 * 60 * 1000, // 15 minutos
+  max: 100, // Limita cada IP a 100 solicitudes por ventana de tiempo
+  message: 'Demasiadas solicitudes desde esta IP, por favor intente de nuevo después de 15 minutos',
 });
 
-// Stricter rate limiter for authentication-related routes (e.g., login, signup)
+// Limitador de tasa más estricto para rutas relacionadas con la autenticación (ej. login, registro)
 const authRateLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000, // 1 hour
-  max: 5, // Limit each IP to 5 authentication requests per hour
-  message: 'Too many authentication attempts from this IP, please try again after an hour',
+  windowMs: 60 * 60 * 1000, // 1 hora
+  max: 5, // Limita cada IP a 5 intentos de autenticación por hora
+  message: 'Demasiados intentos de autenticación desde esta IP, por favor intente de nuevo después de una hora',
   handler: (req, res, _next) => {
     res.status(429).json({
-      status: 'fail',
-      message: 'Too many authentication attempts, please try again after an hour',
+      status: 'fallo',
+      message: 'Demasiados intentos de autenticación, por favor intente de nuevo después de una hora',
     });
   },
 });

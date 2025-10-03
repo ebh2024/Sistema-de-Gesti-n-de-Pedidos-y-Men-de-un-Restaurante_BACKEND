@@ -11,10 +11,11 @@ exports.createTableValidation = [
     .withMessage('La capacidad de la mesa es requerida.')
     .isInt({ gt: 0 })
     .withMessage('La capacidad debe ser un entero positivo.'),
-  body('disponible')
+  body('estado') // Changed from 'disponible' to 'estado'
     .optional()
-    .isBoolean()
-    .withMessage('El estado de disponibilidad debe ser un booleano.'),
+    .trim()
+    .isIn(['available', 'occupied', 'cleaning']) // Added enum for states
+    .withMessage('El estado debe ser "available", "occupied" o "cleaning".'),
 ];
 
 exports.updateTableValidation = [
@@ -29,10 +30,11 @@ exports.updateTableValidation = [
     .optional()
     .isInt({ gt: 0 })
     .withMessage('La capacidad debe ser un entero positivo si se proporciona.'),
-  body('disponible')
+  body('estado') // Changed from 'disponible' to 'estado'
     .optional()
-    .isBoolean()
-    .withMessage('El estado de disponibilidad debe ser un booleano si se proporciona.'),
+    .trim()
+    .isIn(['available', 'occupied', 'cleaning']) // Added enum for states
+    .withMessage('El estado debe ser "available", "occupied" o "cleaning" si se proporciona.'),
 ];
 
 exports.tableIdValidation = [

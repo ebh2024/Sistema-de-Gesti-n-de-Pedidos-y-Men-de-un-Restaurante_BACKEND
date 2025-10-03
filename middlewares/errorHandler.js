@@ -7,13 +7,13 @@ const handleValidationErrors = (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         const errorMessages = errors.array().map(error => error.msg);
-        return next(new AppError(`Invalid input data: ${errorMessages.join('. ')}`, 400));
+        return next(new AppError(`Datos de entrada inválidos: ${errorMessages.join('. ')}`, 400));
     }
     next();
 };
 
 const handleCastErrorDB = err => {
-    const message = `Invalid ${err.path}: ${err.value}.`;
+    const message = `Valor inválido para ${err.path}: ${err.value}.`;
     return new AppError(message, 400);
 };
 
@@ -26,12 +26,12 @@ const handleUniqueConstraintErrorDB = err => {
 
 const handleValidationErrorDB = err => {
     const errors = Object.values(err.errors).map(el => el.message);
-    const message = `Invalid input data. ${errors.join('. ')}`;
+    const message = `Datos de entrada inválidos. ${errors.join('. ')}`;
     return new AppError(message, 400);
 };
 
 const sendErrorDev = (err, res) => {
-    logger.error('ERROR (Development) 💥', err);
+    logger.error('ERROR (Desarrollo) 💥', err);
     res.status(err.statusCode).json({
         status: err.status,
         error: err,
@@ -41,27 +41,27 @@ const sendErrorDev = (err, res) => {
 };
 
 const sendErrorProd = (err, res) => {
-    // Operational, trusted error: send message to client
+    // Error operacional y de confianza: enviar mensaje al cliente
     if (err.isOperational) {
         res.status(err.statusCode).json({
             status: err.status,
             message: err.message
         });
 
-        // Programming or other unknown error: don't leak error details
+        // Error de programación u otro error desconocido: no filtrar detalles del error
     } else {
-        // 1) Log error
-        logger.error('ERROR (Production) 💥', err);
+        // 1) Registrar error
+        logger.error('ERROR (Producción) 💥', err);
 
-        // 2) Send generic message
+        // 2) Enviar mensaje genérico
         res.status(500).json({
             status: 'error',
-            message: 'Something went very wrong!'
+            message: '¡Algo salió muy mal!'
         });
     }
 };
 
-module.exports = (err, req, res, next) => {
+module.exports = (err, req, res, _next) => {
     err.statusCode = err.statusCode || 500;
     err.status = err.status || 'error';
 

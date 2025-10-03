@@ -30,14 +30,14 @@ const { handleValidationErrors } = require('../middlewares/errorHandler'); // Im
  *               - email
  *               - password
  *             properties:
- *               username:
+ *               nombre:
  *                 type: string
  *                 description: Nombre de usuario único
- *               email:
+ *               correo:
  *                 type: string
  *                 format: email
  *                 description: Correo electrónico del usuario
- *               password:
+ *               contraseña:
  *                 type: string
  *                 format: password
  *                 description: Contraseña del usuario (mínimo 6 caracteres)
@@ -68,14 +68,14 @@ if (process.env.NODE_ENV !== 'test') {
  *           schema:
  *             type: object
  *             required:
- *               - email
- *               - password
+ *               - correo
+ *               - contraseña
  *             properties:
- *               email:
+ *               correo:
  *                 type: string
  *                 format: email
  *                 description: Correo electrónico del usuario
- *               password:
+ *               contraseña:
  *                 type: string
  *                 format: password
  *                 description: Contraseña del usuario
@@ -114,9 +114,9 @@ if (process.env.NODE_ENV !== 'test') {
  *           schema:
  *             type: object
  *             required:
- *               - email
+ *               - correo
  *             properties:
- *               email:
+ *               correo:
  *                 type: string
  *                 format: email
  *                 description: Correo electrónico del usuario para restablecer la contraseña
@@ -148,12 +148,12 @@ if (process.env.NODE_ENV !== 'test') {
  *             type: object
  *             required:
  *               - token
- *               - newPassword
+ *               - nuevaContraseña
  *             properties:
  *               token:
  *                 type: string
  *                 description: Token de restablecimiento de contraseña recibido por correo
- *               newPassword:
+ *               nuevaContraseña:
  *                 type: string
  *                 format: password
  *                 description: Nueva contraseña (mínimo 6 caracteres)

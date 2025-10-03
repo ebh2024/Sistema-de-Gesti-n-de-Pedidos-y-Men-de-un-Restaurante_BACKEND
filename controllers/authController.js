@@ -84,7 +84,7 @@ const login = async (req, res, next) => {
         // Generar un token JWT para el usuario autenticado
         const token = jwt.sign(
             { id: user.id, nombre: user.nombre, correo: user.correo, rol: user.rol },
-            process.env.JWT_SECRET || 'your-secret-key', // Usar una clave secreta de entorno o una por defecto
+            process.env.JWT_SECRET || 'tu-clave-secreta', // Usar una clave secreta de entorno o una por defecto
             { expiresIn: '24h' } // El token expira en 24 horas
         );
 
@@ -132,7 +132,7 @@ const forgotPassword = async (req, res, next) => {
         // Generar un token de restablecimiento de contraseña con una expiración de 1 hora
         const resetToken = jwt.sign(
             { id: user.id, correo: user.correo },
-            process.env.JWT_SECRET || 'your-secret-key',
+            process.env.JWT_SECRET || 'tu-clave-secreta',
             { expiresIn: '1h' }
         );
 

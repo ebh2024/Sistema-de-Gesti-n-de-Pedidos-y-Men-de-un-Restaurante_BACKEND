@@ -1,28 +1,28 @@
 openapi: 3.0.0
 info:
-  title: Restaurant Order Management API
+  title: API de Gestión de Pedidos de Restaurante
   version: 1.0.0
-  description: API for managing restaurant orders, dishes, tables, and users.
+  description: API para gestionar pedidos, platos, mesas y usuarios de un restaurante.
 servers:
   - url: http://localhost:3000/api
-    description: Local Development Server
+    description: Servidor de Desarrollo Local
 tags:
-  - name: Authentication
-    description: User authentication and authorization
-  - name: Users
-    description: Operations related to users
-  - name: Dishes
-    description: Operations related to dishes
-  - name: Tables
-    description: Operations related to tables
-  - name: Orders
-    description: Operations related to orders
+  - name: Autenticación
+    description: Autenticación y autorización de usuarios
+  - name: Usuarios
+    description: Operaciones relacionadas con usuarios
+  - name: Platos
+    description: Operaciones relacionadas con platos
+  - name: Mesas
+    description: Operaciones relacionadas con mesas
+  - name: Pedidos
+    description: Operaciones relacionadas con pedidos
 paths:
   /auth/register:
     post:
-      summary: Register a new user
+      summary: Registrar un nuevo usuario
       tags:
-        - Authentication
+        - Autenticación
       requestBody:
         required: true
         content:
@@ -52,14 +52,14 @@ paths:
                 - rol
       responses:
         '201':
-          description: User registered successfully
+          description: Usuario registrado exitosamente
         '400':
-          description: Invalid input
+          description: Entrada inválida
   /auth/login:
     post:
-      summary: Log in a user
+      summary: Iniciar sesión de un usuario
       tags:
-        - Authentication
+        - Autenticación
       requestBody:
         required: true
         content:
@@ -80,13 +80,13 @@ paths:
                 - contraseña
       responses:
         '200':
-          description: User logged in successfully
+          description: Usuario ha iniciado sesión exitosamente
         '401':
-          description: Invalid credentials
+          description: Credenciales inválidas
   /users:
     post:
       summary: Crear un nuevo usuario
-      tags: [Users]
+      tags: [Usuarios]
       security:
         - bearerAuth: []
       requestBody:
@@ -125,7 +125,7 @@ paths:
           description: Acceso denegado
     get:
       summary: Obtener lista de usuarios
-      tags: [Users]
+      tags: [Usuarios]
       security:
         - bearerAuth: []
       responses:
@@ -136,7 +136,7 @@ paths:
   /users/{id}:
     put:
       summary: Actualizar un usuario
-      tags: [Users]
+      tags: [Usuarios]
       security:
         - bearerAuth: []
       parameters:
@@ -178,7 +178,7 @@ paths:
           description: Usuario no encontrado
     delete:
       summary: Eliminar un usuario
-      tags: [Users]
+      tags: [Usuarios]
       security:
         - bearerAuth: []
       parameters:
@@ -198,14 +198,14 @@ paths:
   /dishes/public:
     get:
       summary: Obtener platos disponibles públicamente
-      tags: [Dishes]
+      tags: [Platos]
       responses:
         '200':
           description: Lista de platos disponibles
   /dishes:
     get:
       summary: Obtener todos los platos (requiere autenticación)
-      tags: [Dishes]
+      tags: [Platos]
       security:
         - bearerAuth: []
       responses:
@@ -213,7 +213,7 @@ paths:
           description: Lista de todos los platos
     post:
       summary: Crear un nuevo plato (solo admin)
-      tags: [Dishes]
+      tags: [Platos]
       security:
         - bearerAuth: []
       requestBody:
@@ -251,7 +251,7 @@ paths:
   /dishes/{id}:
     get:
       summary: Obtener un plato por ID
-      tags: [Dishes]
+      tags: [Platos]
       security:
         - bearerAuth: []
       parameters:
@@ -268,7 +268,7 @@ paths:
           description: Plato no encontrado
     put:
       summary: Actualizar un plato (solo admin)
-      tags: [Dishes]
+      tags: [Platos]
       security:
         - bearerAuth: []
       parameters:
@@ -310,7 +310,7 @@ paths:
           description: Plato no encontrado
     delete:
       summary: Eliminar un plato (solo admin)
-      tags: [Dishes]
+      tags: [Platos]
       security:
         - bearerAuth: []
       parameters:
@@ -330,7 +330,7 @@ paths:
   /tables:
     get:
       summary: Obtener todas las mesas
-      tags: [Tables]
+      tags: [Mesas]
       security:
         - bearerAuth: []
       responses:
@@ -340,7 +340,7 @@ paths:
           description: Acceso denegado
     post:
       summary: Crear una nueva mesa (solo admin)
-      tags: [Tables]
+      tags: [Mesas]
       security:
         - bearerAuth: []
       requestBody:
@@ -373,7 +373,7 @@ paths:
   /tables/{id}:
     get:
       summary: Obtener una mesa por ID
-      tags: [Tables]
+      tags: [Mesas]
       security:
         - bearerAuth: []
       parameters:
@@ -390,7 +390,7 @@ paths:
           description: Mesa no encontrada
     put:
       summary: Actualizar una mesa (solo admin)
-      tags: [Tables]
+      tags: [Mesas]
       security:
         - bearerAuth: []
       parameters:
@@ -428,7 +428,7 @@ paths:
           description: Mesa no encontrada
     delete:
       summary: Eliminar una mesa (solo admin)
-      tags: [Tables]
+      tags: [Mesas]
       security:
         - bearerAuth: []
       parameters:
@@ -448,7 +448,7 @@ paths:
   /orders:
     get:
       summary: Obtener todos los pedidos
-      tags: [Orders]
+      tags: [Pedidos]
       security:
         - bearerAuth: []
       responses:
@@ -458,7 +458,7 @@ paths:
           description: Acceso denegado
     post:
       summary: Crear un nuevo pedido (mesero, admin)
-      tags: [Orders]
+      tags: [Pedidos]
       security:
         - bearerAuth: []
       requestBody:
@@ -492,7 +492,7 @@ paths:
   /orders/{id}:
     get:
       summary: Obtener un pedido por ID
-      tags: [Orders]
+      tags: [Pedidos]
       security:
         - bearerAuth: []
       parameters:
@@ -509,7 +509,7 @@ paths:
           description: Pedido no encontrado
     put:
       summary: Actualizar un pedido (mesero, admin)
-      tags: [Orders]
+      tags: [Pedidos]
       security:
         - bearerAuth: []
       parameters:
@@ -545,7 +545,7 @@ paths:
           description: Pedido no encontrado
     delete:
       summary: Eliminar un pedido (solo admin)
-      tags: [Orders]
+      tags: [Pedidos]
       security:
         - bearerAuth: []
       parameters:
@@ -565,7 +565,7 @@ paths:
   /orders/{id}/status:
     put:
       summary: Actualizar el estado de un pedido (mesero, admin, cocinero)
-      tags: [Orders]
+      tags: [Pedidos]
       security:
         - bearerAuth: []
       parameters:

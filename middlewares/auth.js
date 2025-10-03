@@ -10,7 +10,7 @@ const authenticateToken = (req, res, next) => {
         return next(new AppError('Token de acceso requerido', 401));
     }
 
-    jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key', (err, user) => {
+    jwt.verify(token, process.env.JWT_SECRET || 'tu-clave-secreta', (err, user) => {
         if (err) {
             return next(new AppError('Token inválido', 403));
         }
