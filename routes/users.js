@@ -15,15 +15,13 @@ const { handleValidationErrors } = require('../middlewares/errorHandler');
  *   description: Gestión de usuarios por administradores
  */
 
-// Todas las rutas requieren autenticación y rol de admin
-router.use(authenticateToken);
-router.use(authorizeRoles('admin'));
+router.use(authenticateToken); // All routes require authentication
 
 /**
  * @swagger
  * /api/users:
  *   post:
- *     summary: Crear un nuevo usuario
+ *     summary: Crear un nuevo usuario (solo admin)
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
@@ -62,13 +60,13 @@ router.use(authorizeRoles('admin'));
  *       403:
  *         description: Acceso denegado
  */
-router.post('/', createUserValidation, handleValidationErrors, userController.createUser);
+router.post('/', authorizeRoles('admin'), createUserValidation, handleValidationErrors, userController.createUser);
 
 /**
  * @swagger
  * /api/users:
  *   get:
- *     summary: Obtener lista de usuarios
+ *     summary: Obtener lista de usuarios (solo admin)
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
@@ -78,13 +76,38 @@ router.post('/', createUserValidation, handleValidationErrors, userController.cr
  *       403:
  *         description: Acceso denegado
  */
-router.get('/', userController.getUsers);
+router.get('/', authorizeRoles('admin'), userController.getUsers);
+
+/**
+ * @swagger
+ * /api/users/{id}:
+ *   get:
+ *     summary: Obtener un usuario por ID (admin o el propio usuario)
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID del usuario
+ *     responses:
+ *       200:
+ *         description: Usuario obtenido exitosamente
+ *       403:
+ *         description: Acceso denegado
+ *       404:
+ *         description: Usuario no encontrado
+ */
+router.get('/:id', userController.getUserById); // Custom controller for authorization logic
 
 /**
  * @swagger
  * /api/users/{id}:
  *   put:
- *     summary: Actualizar un usuario
+ *     summary: Actualizar un usuario (admin o el propio usuario)
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
@@ -126,13 +149,13 @@ router.get('/', userController.getUsers);
  *       404:
  *         description: Usuario no encontrado
  */
-router.put('/:id', updateUserValidation, handleValidationErrors, userController.updateUser);
+router.put('/:id', updateUserValidation, handleValidationErrors, userController.updateUser); // Custom controller for authorization logic
 
 /**
  * @swagger
  * /api/users/{id}:
  *   delete:
- *     summary: Eliminar un usuario
+ *     summary: Eliminar un usuario (solo admin)
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
@@ -151,6 +174,6 @@ router.put('/:id', updateUserValidation, handleValidationErrors, userController.
  *       404:
  *         description: Usuario no encontrado
  */
-router.delete('/:id', userController.deleteUser);
+router.delete('/:id', authorizeRoles('admin'), userController.deleteUser);
 
 module.exports = router;

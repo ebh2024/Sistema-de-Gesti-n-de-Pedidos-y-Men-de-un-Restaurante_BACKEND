@@ -33,7 +33,15 @@ module.exports = (sequelize) => {
         tableName: 'users',
         timestamps: true,
         createdAt: 'created_at',
-        updatedAt: 'updated_at'
+        updatedAt: 'updated_at',
+        defaultScope: {
+            attributes: { exclude: ['contraseña'] }
+        },
+        scopes: {
+            withPassword: {
+                attributes: { include: ['contraseña'] }
+            }
+        }
     });
 
     User.beforeCreate(async (user) => {

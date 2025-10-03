@@ -60,8 +60,8 @@ const login = async (req, res, next) => {
             return next(new AppError('Correo y contraseña son requeridos', 400));
         }
 
-        // Buscar el usuario por correo y verificar que esté activo
-        const user = await User.findOne({
+        // Buscar el usuario por correo y verificar que esté activo, incluyendo la contraseña
+        const user = await User.scope('withPassword').findOne({
             where: {
                 correo,
                 is_active: true // Asumiendo que 'is_active' es un booleano o 1 para activo

@@ -55,8 +55,6 @@ describe('Auth API', () => {
         await sequelize.drop();
 
         await sequelize.query('SET FOREIGN_KEY_CHECKS = 1', null, { raw: true });
-
-        await sequelize.close();
     });
 
     describe('GET /api/health', () => {
