@@ -48,9 +48,8 @@ Backend API para el sistema de gestión de pedidos y menú de un restaurante, de
    ```
 
 3. **Configurar la base de datos:**
-   - Crear la base de datos MySQL usando el archivo `database_schema.sql`
-   - Actualizar las variables de entorno en `.env`
-   - **Nota:** El proyecto ahora usa Sequelize ORM. Asegúrate de que las credenciales de MySQL sean correctas en el archivo `.env`
+   - **Crear la base de datos MySQL:** Puedes crear la base de datos manualmente o ejecutar el script `database_schema.sql` para la creación inicial de tablas. Sequelize ORM se encargará de sincronizar el esquema de la base de datos al iniciar la aplicación, pero es recomendable tener la base de datos y las tablas iniciales creadas.
+   - Actualizar las variables de entorno en `.env` con tus credenciales de MySQL.
 
 4. **Configurar variables de entorno:**
    Editar el archivo `.env` con tus configuraciones:
