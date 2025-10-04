@@ -189,6 +189,8 @@ const getOrderById = async (req, res, next) => {
  */
 const createOrder = async (req, res, next) => {
     try {
+        console.log('createOrder - req.body:', req.body); // Add logging for request body
+        console.log('createOrder - req.user:', req.user); // Add logging for user object
         const { id_mesa, detalles, estado } = req.body;
         const { orderId, total } = await orderService.createOrder(id_mesa, detalles, req.user.id, estado);
         logger.info(`Pedido creado exitosamente con ID: ${orderId} por el mesero ${req.user.id}. Estado: ${estado}. Total: ${total}`);

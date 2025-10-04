@@ -7,6 +7,7 @@ const handleValidationErrors = (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         const errorMessages = errors.array().map(error => error.msg);
+        console.error('Validation Errors:', errors.array()); // Add this line for debugging
         return next(new AppError(`Datos de entrada inválidos: ${errorMessages.join('. ')}`, 400));
     }
     next();

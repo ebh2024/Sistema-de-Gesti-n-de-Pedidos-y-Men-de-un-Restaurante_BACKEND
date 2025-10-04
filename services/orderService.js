@@ -219,12 +219,48 @@ class OrderService {
                 throw new AppError('Pedido no encontrado', 404);
             }
 
-            if (order.estado === 'borrador' && newEstado === 'pendiente') {
-                const table = await Table.findByPk(order.id_mesa, { transaction });
-                if (table.estado !== 'available') {
-                    throw new AppError('La mesa no está disponible', 400);
+            // Role-based state transition validation
+            if (user.rol === 'mesero') {
+                if (newEstado === 'en preparación') {
+                    throw new AppError('No tienes permiso para cambiar a este estado', 403);
                 }
-                await Table.update({ estado: 'occupied' }, { where: { id: order.id_mesa }, transaction });
+                if (order.estado === 'borrador' && newEstado === 'pendiente') {
+                    const table = await Table.findByPk(order.id_mesa, { transaction });
+                    if (table.estado !== 'available') {
+                        throw new AppError('La mesa no está disponible', 400);
+                    }
+                    await Table.update({ estado: 'occupied' }, { where: { id: order.id_mesa }, transaction });
+                } else if (order.estado === 'pendiente' && newEstado === 'servido') {
+                    // Valid transition for mesero
+                } else if (order.estado === 'borrador' && newEstado === 'servido') {
+                    // Valid transition for mesero
+                } else if (order.estado !== 'borrador' && order.estado !== 'pendiente' && newEstado !== 'servido') {
+                    throw new AppError('No tienes permiso para cambiar a este estado', 403);
+                }
+            } else if (user.rol === 'cocinero') {
+                if (newEstado === 'borrador') {
+                    throw new AppError('No tienes permiso para cambiar a este estado', 403);
+                }
+                if (order.estado === 'pendiente' && newEstado === 'en preparación') {
+                    // Valid transition for cocinero
+                } else if (order.estado === 'en preparación' && newEstado === 'pendiente') {
+                    // Valid transition for cocinero
+                } else if (order.estado === 'en preparación' && newEstado === 'servido') {
+                    // Valid transition for cocinero
+                } else if (newEstado !== 'pendiente' && newEstado !== 'en preparación' && newEstado !== 'servido') {
+                    throw new AppError('No tienes permiso para cambiar a este estado', 403);
+                }
+            } else if (user.rol === 'admin') {
+                // Admin can change to any valid state, no specific restrictions here
+                if (order.estado === 'borrador' && newEstado === 'pendiente') {
+                    const table = await Table.findByPk(order.id_mesa, { transaction });
+                    if (table.estado !== 'available') {
+                        throw new AppError('La mesa no está disponible', 400);
+                    }
+                    await Table.update({ estado: 'occupied' }, { where: { id: order.id_mesa }, transaction });
+                }
+            } else {
+                throw new AppError('Rol de usuario no autorizado para cambiar el estado del pedido', 403);
             }
 
             await Order.update(

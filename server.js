@@ -39,10 +39,8 @@ const AppError = require('./utils/AppError');
 // Importar el middleware global de manejo de errores
 const globalErrorHandler = require('./middlewares/errorHandler');
 
-// Solo importar y sincronizar modelos si no estamos en el entorno de prueba
-if (process.env.NODE_ENV !== 'test') {
-    require('./models');
-}
+// Importar los modelos para que Sequelize los registre
+require('./models');
 
 /**
  * Configuración de rate limiting global para la API.

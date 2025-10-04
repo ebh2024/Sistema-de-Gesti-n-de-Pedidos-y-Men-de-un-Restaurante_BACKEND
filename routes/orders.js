@@ -12,7 +12,7 @@ router.get('/:id', orderIdValidation, handleValidationErrors, orderController.ge
 
 router.post('/', authorizeRoles('mesero', 'admin'), createOrderValidation, handleValidationErrors, orderController.createOrder);
 router.put('/:id', authorizeRoles('mesero', 'admin'), updateOrderValidation, handleValidationErrors, orderController.updateOrder);
-router.put('/:id/status', authorizeRoles('mesero', 'admin', 'cocinero'), updateOrderStatusValidation, handleValidationErrors, orderController.updateOrderStatus);
+router.patch('/:id/status', authorizeRoles('mesero', 'admin', 'cocinero'), updateOrderStatusValidation, handleValidationErrors, orderController.updateOrderStatus);
 
 router.delete('/:id', authorizeRoles('admin'), orderIdValidation, handleValidationErrors, orderController.deleteOrder);
 

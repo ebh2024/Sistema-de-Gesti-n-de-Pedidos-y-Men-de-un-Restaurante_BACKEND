@@ -25,11 +25,15 @@ module.exports = (sequelize) => {
         },
         estado: {
             type: DataTypes.ENUM('borrador', 'pendiente', 'en preparación', 'servido'),
-            defaultValue: 'pendiente'
+            defaultValue: 'pendiente',
+            allowNull: false,
+            validate: {
+                isIn: [['borrador', 'pendiente', 'en preparación', 'servido']]
+            }
         },
         total: {
             type: DataTypes.DECIMAL(10, 2),
-            defaultValue: 0,
+            defaultValue: '0.00',
             validate: {
                 min: 0.00
             }
